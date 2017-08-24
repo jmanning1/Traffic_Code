@@ -1,0 +1,111 @@
+--Create A Table
+--Create a table from 1 Table where you want to check another table references the row
+create table LINK_UK as select * from link where LINK.LINK_ID in (select streetaddress_uk.link_id from streetaddress_uk) ;
+
+
+-- Inner Join
+Create table table_new as SELECT columns
+FROM table1 
+INNER JOIN table2
+ON table1.column = table2.column;
+
+
+-- Inner Join with Where Clause:
+
+create table LINK_UK as SELECT a.*, b.*
+FROM LINK A 
+INNER JOIN LINKATTRIBUTE B
+ON a.LINK_ID = b.LINK_ID where a.LINK_ID in (select streetaddress_uk.link_id from streetaddress_uk);
+
+-- Inner Join with Where Clause where Duplicate Columns (Remove Second Duplicate Column) Only when records are referenced in all 3 tables:
+
+create table LINK_UK
+AS SELECT a.*,
+b.FOUR_WHEEL_DRIVE, 
+b.SCENIC_ROUTE, 
+b.PARKING_LOT_ROAD, 
+b.PRIORITY_ROAD, 
+b.CARPOOL_ROAD, 
+b.REVERSIBLE, 
+b.EXPRESS_LANE, 
+b.TRANSITION_AREA, 
+b.EXPANDED_INCLUSION, 
+b.SUPPLEMENTAL_GEO_BITSET, 
+b.DELIVERY_ROAD, 
+b.TRUCK_ROAD_TYPE
+FROM LINK A 
+INNER JOIN LINKATTRIBUTE B
+ON a.LINK_ID = b.LINK_ID where a.LINK_ID in (select streetaddress_uk.link_id from streetaddress_uk);
+
+
+-- LEFT Join with Where Clause where Duplicate Columns (Remove Second Duplicate Column) all records referenced in LINK table:
+
+create table LINK_UK
+AS SELECT a.*,
+b.FOUR_WHEEL_DRIVE, 
+b.SCENIC_ROUTE, 
+b.PARKING_LOT_ROAD, 
+b.PRIORITY_ROAD, 
+b.CARPOOL_ROAD, 
+b.REVERSIBLE, 
+b.EXPRESS_LANE, 
+b.TRANSITION_AREA, 
+b.EXPANDED_INCLUSION, 
+b.SUPPLEMENTAL_GEO_BITSET, 
+b.DELIVERY_ROAD, 
+b.TRUCK_ROAD_TYPE
+FROM LINK A 
+LEFT JOIN LINKATTRIBUTE B
+ON a.LINK_ID = b.LINK_ID where a.LINK_ID in (select streetaddress_uk.link_id from streetaddress_uk);
+
+-- LEFT Join with Where Clause where Duplicate Columns with Multiple Tables (Remove Second Duplicate Columns) all records referenced in LINK table:
+
+create table LINK_UK
+AS SELECT a.*,
+b.FOUR_WHEEL_DRIVE, 
+b.SCENIC_ROUTE, 
+b.PARKING_LOT_ROAD, 
+b.PRIORITY_ROAD, 
+b.CARPOOL_ROAD, 
+b.REVERSIBLE, 
+b.EXPRESS_LANE, 
+b.TRANSITION_AREA, 
+b.EXPANDED_INCLUSION, 
+b.SUPPLEMENTAL_GEO_BITSET, 
+b.DELIVERY_ROAD, 
+b.TRUCK_ROAD_TYPE,
+c.AUTOMOBILES,
+c.BUSES,
+c.TAXIS,
+c.CARPOOLS,
+c.PEDESTRIANS,
+c.TRUCKS,
+c.THROUGH_TRAFFIC,
+c.DELIVERIES,
+c.EMERGENCY_VEHICLES,
+c.MOTORCYCLES
+FROM LINK a 
+LEFT JOIN LINKATTRIBUTE b
+ON a.LINK_ID = b.LINK_ID
+LEFT JOIN VEHICLEACCESS c
+ON a.ACCESS_ID = c.ACCESS_ID
+where a.LINK_ID in (select streetaddress_uk.link_id from streetaddress_uk);
+
+--If All
+
+
+create table streetaddress_rm as (
+select s.*
+from streetaddress s
+left join link_rm l
+on s.link_id = l.link_id);
+
+-- or 
+
+create table streetaddress_rm as (
+select *
+from streetaddress 
+where link_id in (select link_id from link_rm));
+
+
+

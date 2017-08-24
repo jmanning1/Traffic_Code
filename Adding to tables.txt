@@ -1,0 +1,13 @@
+imp rpa_alic_test/rpa_alic_test@consulting ignore=Y full=y file="X:\Consultancy_Data\ruralpaymentsagency\ALIC into Production\Data\1spatial_extract_170115.dmp"
+
+delete from ALIC_MM_AREA a
+where rowid > 
+(select min(rowid) 
+ from ALIC_MM_AREA b
+where a.toid = b.toid);
+
+delete from ALIC_MM_LINE a
+where rowid > 
+(select min(rowid) 
+ from ALIC_MM_LINE b
+where a.toid = b.toid);

@@ -1,0 +1,5 @@
+drop user source_uubolt cascade;
+
+alter tablespace HERE_UK_DEMO offline;
+drop user HERE_UK_DEMO cascade;
+drop tablespace HERE_UK_DEMO including contents and datafiles;

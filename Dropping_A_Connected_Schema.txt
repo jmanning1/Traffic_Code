@@ -1,0 +1,34 @@
+SQL> drop user strmadmin cascade;
+drop user strmadmin cascade
+
+ERROR at line 1:
+ORA-01940: cannot drop a user that is currently connected
+
+Solution of The Problem:
+
+Find out the connected user sid and serial# by,
+
+SQL> select sid, serial# from v$session where username = 'STRMADMIN';
+
+SID SERIAL#
+— —
+268 1268
+315 1223
+
+Before killing session you may wish to lock the account for further connection attempts. This is extremely necessary to drop a user who automatically establish session like to drop an application user or to drop a user who perform batch jobs.
+
+SQL> Alter user strmadmin account lock;
+
+Now kill the connected session.
+SQL> alter system kill session '268,1268';
+System altered.
+
+SQL> alter system kill session '315,1223';
+System altered.
+
+It is possible to force the kill by adding the IMMEDIATE keyword:
+SQL> ALTER SYSTEM KILL SESSION 'sid,serial#' IMMEDIATE;
+
+And then drop the user.
+SQL> drop user strmadmin cascade;
+User dropped.

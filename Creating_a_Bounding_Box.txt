@@ -1,0 +1,26 @@
+insert into alic_rlr_alic_input_data_0_1
+    (select
+     '106858741', -- partynumber 
+     c.SHEET_ID,
+     c.PARCEL_ID,
+     '07/214/0052', -- cph
+     'B',
+     null,
+      sysdate,
+    9999998,
+    SDO_GEOM.SDO_MBR(c.geometry, m.diminfo),
+    null,
+    '104770925',   -- trasnactionid
+    '24-10-2014'
+   from ALIC_PBL c, user_sdo_geom_metadata m
+    where c.sheet_id='SW5736'
+    and c.parcel_id='9034'
+    and rownum = 1
+    and m.table_name = 'RLR_ALIC_INPUT'
+    AND m.column_name = 'MBR'
+   );
+   commit;
+   
+   
+--Using a Zip Code:
+CREATE TABLE LINK_CHICAGO as select * from LINK where LEFT_POSTAL_CODE in(60601,60602,60603,60604,60605,60606,60607,60608,60609,60610,60611,60612,60613,60614,60615,60616,60617,60618,60619,60620,60621,60622,60623,60624,60625,60626,60639,60640,60641,60642,60643,60644,60645,60646,60647,60649,60651,60652,60653,60654,60655,60656,60657,60659,60660,60661,60664,60666,60668,60669,60670,60673,60674,60675,60701);

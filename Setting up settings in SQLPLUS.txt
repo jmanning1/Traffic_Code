@@ -1,0 +1,3 @@
+--To Set Timings in SQLPLUS
+
+set time on timing on

@@ -1,0 +1,8 @@
+insert /*+ append */ into link_rm (
+select *
+  from link
+  where sdo_filter(
+    geom,
+    sdo_geometry(2003,4326,NULL,SDO_ELEM_INFO_ARRAY(1,1003,3),
+      sdo_ordinate_array(-0.95172198446, 51.4903922942 , -0.568825374017, 51.7699500931))) = 'TRUE');
+commit;

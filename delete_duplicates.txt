@@ -1,0 +1,6 @@
+/*DELETE DUPLICATES*/
+delete from TOPOGRAPHICLINE a
+where rowid > 
+(select min(rowid) 
+ from TOPOGRAPHICLINE b
+ where a.toid = b.toid);

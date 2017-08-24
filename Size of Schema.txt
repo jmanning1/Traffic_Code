@@ -1,0 +1,51 @@
+Z:\>SQLPLUS HERE_EUROPE/HERE_EUROPE@CONSULTING
+
+SQL*Plus: Release 11.2.0.2.0 Production on Thu Apr 14 09:25:44 2016
+
+Copyright (c) 1982, 2010, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, Automatic Storage Management, OLAP, Data Mining
+and Real Application Testing options
+
+SQL> SELECT sum(bytes)/1024/1024 FROM user_segments;
+
+SUM(BYTES)/1024/1024
+--------------------
+          41561.4375
+
+          
+-------------------------------------------------------------------------------
+
+Need Grant select on dba_data_files or DBA Privs
+
+--For More Info
+
+SQL> select *
+  2  from dba_data_files
+  3  where tablespace_name = 'ROYALMAIL2016';
+
+FILE_NAME
+--------------------------------------------------------------------------------
+   FILE_ID TABLESPACE_NAME                     BYTES     BLOCKS STATUS
+---------- ------------------------------ ---------- ---------- ---------
+RELATIVE_FNO AUT   MAXBYTES  MAXBLOCKS INCREMENT_BY USER_BYTES USER_BLOCKS
+------------ --- ---------- ---------- ------------ ---------- -----------
+ONLINE_
+-------
++PHX_DATA/consulting/datafile/royalmail2016.1350.920222337
+       211 ROYALMAIL2016                  5693767680     695040 AVAILABLE
+         211 YES 1.0737E+10    1310720         1280 5692719104      694912
+ONLINE
+
+-- 
+
+select bytes/1024/1024 as current_mb, maxbytes/1024/1024 as max_mb, autoextensible
+from dba_data_files
+where tablespace_name = 'ROYALMAIL2016';
+
+CURRENT_MB     MAX_MB AUT
+---------- ---------- ---
+      5430      10240 YES

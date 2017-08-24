@@ -1,0 +1,22 @@
+--By Dawn Moffat
+--This script creates a user and assigns a default tablespace to the user--
+
+SET AUTOPRINT OFF
+SET VERIFY OFF
+
+--Asks user to enter a user name---
+ACCEPT 1 PROMPT 'Please enter user name: '
+
+--Create a Tablespace for the user---
+CREATE TABLESPACE &1
+DATAFILE 'C:\oraclexe\app\oracle\oradata\XE\&1..tbs' SIZE 10M AUTOEXTEND ON;
+
+--Create the user and use the above tablespace as the default tablespace--
+CREATE USER &1
+IDENTIFIED BY &1
+DEFAULT TABLESPACE &1;
+
+--Grant required privileges to the user--
+GRANT CONNECT, RESOURCE TO &1;
+GRANT UNLIMITED TABLESPACE TO &1;
+GRANT CREATE ANY VIEW TO &1;

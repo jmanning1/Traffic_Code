@@ -1,0 +1,8 @@
+--How To Count All Tables in a Database
+
+SELECT 'select '''||table_name||''',count(1) from '||table_name||' union all'  sql_code
+from user_Tables
+where table_name not like 'MD%'
+order by 1;
+
+--then take the output, remove the last UNION ALL and change it to ORDER BY 1;
