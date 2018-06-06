@@ -1,4 +1,0 @@
-
---Granting Access to another schema
-
-grant select on ha.HAPMS_EPSG4326 to here_europe;

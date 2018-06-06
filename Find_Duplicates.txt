@@ -1,5 +1,0 @@
-Select 
-Featurenumber, count(1)
-From point_assets
-Group By featurenumber
-Having count(1) > 1;

@@ -1,8 +1,0 @@
-select 
-'ALTER TABLE '||table_name||' add MI_PRINX NUMBER(10,0); UPDATE '||table_name||' set MI_PRINX = rownum; ALTER TABLE '||table_name||' ADD CONSTRAINT '||table_name||'_PK PRIMARY KEY (MI_PRINX);'
-from user_tables 
-where table_name not like '%MDRT%'  
-and table_name not like '%LABEL%' 
-and table_name != 'PINS' 
-and table_name != 'VECTORS'
-;

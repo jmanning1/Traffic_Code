@@ -1,2 +1,0 @@
-update alic_rlr_alic_input_data_0_1 set id = rownum;
-commit;

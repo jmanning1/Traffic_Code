@@ -1,8 +1,0 @@
--- Update a Feature with an attribute from another Table
-update SSA_NO_SPIKES
-SET GEOMETRY = (select GEOMETRY from SSA_NO_SPIKES_OP where SMALL_AREA = '227034005')
-where SMALL_AREA = '227034005';
-
-update SSA_NO_SPIKES
-SET GEOMETRY = (select GEOMETRY from SSA_NO_SPIKES_OP where SMALL_AREA = '227081001')
-where SMALL_AREA = '227081001';
