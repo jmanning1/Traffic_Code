@@ -1,13 +1,13 @@
 library(sf)                                                                                   
 
-library(ukboundaries)                                                                         
+library(ukboundaries) 
 
-dl_stats19_2016 <- function(zip_url = paste0("http://data.dft.gov.uk/road-accidents-safety-data/",
-                                             "dftRoadSafety_Accidents_2016.zip"), data_dir = tempdir()){
+dl_stats19_2015 <- function(zip_url = paste0("http://data.dft.gov.uk/road-accidents-safety-data/",
+                                             "RoadSafetyData_2015.zip"), data_dir = tempdir()){
   
   # download and unzip the data if it's not present
-  if(!"dftRoadSafety_Accidents_2016.csv" %in% list.files(data_dir)){
-    destfile <- file.path(data_dir, "dftRoadSafety_Accidents_2016.zip")
+  if(!"Accidents_2015" %in% list.files(data_dir)){
+    destfile <- file.path(data_dir, "RoadSafetyData_2015.zip")
     download.file(zip_url, destfile)
     unzip(destfile, exdir = data_dir)
   }
@@ -17,7 +17,9 @@ dl_stats19_2016 <- function(zip_url = paste0("http://data.dft.gov.uk/road-accide
   
 }
 
-dl_stats19_2016()
+dl_stats19_2015()
+
+
 
 # dl_stats19 <- function(zip_url = paste0("http://data.dft.gov.uk.s3.amazonaws.com/",
 #                                          "road-accidents-safety-data/Stats19_Data_2005-2014.zip"), data_dir = tempdir()){
@@ -37,7 +39,7 @@ dl_stats19_2016()
 
 # Read File
 
-ac = read.csv(file.path(tempdir(), "dftRoadSafety_Accidents_2016.csv")) 
+ac = read.csv(file.path(tempdir(), "Accidents_2015.csv")) 
                                    
 ### Format File
 
@@ -67,10 +69,10 @@ format_stats19_ac <- function(ac){
     factor(ac$`1st_Road_Class`,
            labels = c("Motorway", "A(M)", "A", "B", "C", "Unclassified"))
   
-  # Missing Level added as in 2016, not in 2005-14
+
   ac$Road_Type <-
     factor(ac$Road_Type,
-           labels = c("Missing", "Roundabout", "One way street", "Dual carriageway", "Single carriageway",
+           labels = c("Roundabout", "One way street", "Dual carriageway", "Single carriageway",
                       "Slip road", "Unknown"))
   ac$Junction_Detail <-
     factor(ac$Junction_Detail, labels =
@@ -79,14 +81,16 @@ format_stats19_ac <- function(ac){
                "Crossroads", "More than 4 arms (not roundabout)", "Private drive or entrance",
                "Other junction"))
   
-  # Missing Level added as in 2016, not in 2005-14
+
   ac$Light_Conditions <-
     factor(ac$Light_Conditions,
-           labels = c("Missing", "Daylight", "Darkness - lights lit", "Darkness - lights unlit",
+           labels = c("Daylight", "Darkness - lights lit", "Darkness - lights unlit",
                       "Darkness - no lighting", "Darkness - lighting unknown"))
+  
+  # Missing Level removed as not in 2015, not in 2005-14
   ac$Weather_Conditions <-
     factor(ac$Weather_Conditions,
-           labels = c("Data missing or out of range", "Fine no high winds", "Raining no high winds",
+           labels = c("Fine no high winds", "Raining no high winds",
                       "Snowing no high winds", "Fine + high winds", "Raining + high winds",
                       "Snowing + high winds", "Fog or mist", "Other", "Unknown"))
   ac$Road_Surface_Conditions <-
