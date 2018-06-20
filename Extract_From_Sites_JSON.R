@@ -1,7 +1,14 @@
 library("httr")
 library( "jsonlite")
 
-sites = fromJSON( "http://webtris.highwaysengland.co.uk/api/v1/sites" , simplifyDataFrame=TRUE, flatten = TRUE)
+
+# All sites
+# sites = fromJSON( "http://webtris.highwaysengland.co.uk/api/v1/sites" , simplifyDataFrame=TRUE, flatten = TRUE)
+
+# MIDAS Sites
+
+sites = fromJSON( "http://webtris.highwaysengland.co.uk/api/v1/sitetypes/1/sites" , simplifyDataFrame=TRUE, flatten = TRUE)
+
 sites = sites$sites
 names(sites)
 colnames(sites) = c("Id", "Name", "Description", "Longitude", "Latitude", "Status")

@@ -17,6 +17,10 @@ sites = sites[sites$`Geographic Address` != "NO TMU ID",]
 sites = sites[sites$Status != "Inactive",]
 sites = sites[!(duplicated(sites$`Geographic Address`) | duplicated(sites$`Geographic Address`, fromLast = TRUE)), ]
 
+
+write.csv(sites, file = "D:/Documents/5872M-Dissertation/Data/Geometries/Site_Locations_Cleaned.csv",row.names=FALSE)
+
+
 # Load Halogen Data
 
 data = readr::read_csv(file.path("D:/Documents/5872M-Dissertation/Data/csv_files/", "10010518.tcd.csv"))
