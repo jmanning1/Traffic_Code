@@ -37,14 +37,11 @@ dl_stats19_2016()
 
 # Read File
 
-ac = read.csv(file.path(tempdir(), "dftRoadSafety_Accidents_2016.csv")) 
-
-# Save Orginal
-ac_orig_2016 = ac
-
+ac_orig = read.csv(file.path(tempdir(), "dftRoadSafety_Accidents_2016.csv")) 
+                                   
 ### Format File
 
-colnames(ac) = c("Accident_Index", "Location_Easting_OSGR", "Location_Northing_OSGR", "Longitude", "Latitude", "Police_Force", "Accident_Severity", "Number_of_Vehicles", "Number_of_Casualties", "Date", "Day_of_Week", "Time", "Local_Authority_(District)", "Local_Authority_(Highway)", "1st_Road_Class", "1st_Road_Number", "Road_Type", "Speed_limit", "Junction_Detail", "Junction_Control", "2nd_Road_Class", "2nd_Road_Number", "Pedestrian_Crossing-Human_Control", "Pedestrian_Crossing-Physical_Facilities", "Light_Conditions", "Weather_Conditions", "Road_Surface_Conditions", "Special_Conditions_at_Site", "Carriageway_Hazards", "Urban_or_Rural_Area", "Did_Police_Officer_Attend_Scene_of_Accident", "LSOA_of_Accident_Location")
+colnames(ac_orig) = c("Accident_Index", "Location_Easting_OSGR", "Location_Northing_OSGR", "Longitude", "Latitude", "Police_Force", "Accident_Severity", "Number_of_Vehicles", "Number_of_Casualties", "Date", "Day_of_Week", "Time", "Local_Authority_(District)", "Local_Authority_(Highway)", "1st_Road_Class", "1st_Road_Number", "Road_Type", "Speed_limit", "Junction_Detail", "Junction_Control", "2nd_Road_Class", "2nd_Road_Number", "Pedestrian_Crossing-Human_Control", "Pedestrian_Crossing-Physical_Facilities", "Light_Conditions", "Weather_Conditions", "Road_Surface_Conditions", "Special_Conditions_at_Site", "Carriageway_Hazards", "Urban_or_Rural_Area", "Did_Police_Officer_Attend_Scene_of_Accident", "LSOA_of_Accident_Location")
 
 
 format_stats19_ac_2016 <- function(ac){
@@ -104,24 +101,21 @@ format_stats19_ac_2016 <- function(ac){
   
   names(ac)[1] <- "Accident_Index" # rename faulty index name
   
+  ac
   
 }
 
-format_stats19_ac_2016(ac)
+ac = format_stats19_ac_2016(ac_orig)
 
-# Make Spatial
+# Extract Leeds
 
 ac = ac[!is.na(ac$Longitude), ]                                                               
-ac_sf = st_as_sf(ac, coords = c("Longitude", "Latitude"), crs = 4326) 
-
-# For Leeds Extraction
-
-ac_lds = ac[leeds, ]       
+ac_sf = st_as_sf(ac, coords = c("Longitude", "Latitude"), crs = 4326)    
+class(ac_sf)
+ac_lds = ac_sf[leeds, ]       
 head(ac_lds)
 
-plot(ac_lds$Location_Easting_OSGR,ac_lds$Location_Northing_OSGR)
-
-
+plot(ac_lds)
 
 ####################################
 # 
