@@ -45,7 +45,7 @@ roads_shape = st_read("D:/Documents/5872M-Dissertation/Data/Geometries/Roads/Lin
 osgb_roads = st_transform(roads_shape, crs = 27700)
 
 
-# Run Stat19_2016.R first tp get ac_sf
+# Run 001_Extract_Stat19_2016.R first tp get ac_sf
 
 osgb_stat19 = st_transform(ac_sf, crs = 27700)
 
@@ -67,9 +67,12 @@ new_buffer = ac_buffer[buffer_road, ]
 
 coor = st_coordinates(new_buffer$geometry)
 
-output = cbind(traf_stat19, coor)
+output = cbind(new_buffer, coor)
 
 output$geometry = NULL
+
+colnames(output) = c("Accident_Index", "Location_Easting_OSGR", "Location_Northing_OSGR", "Police_Force", "Accident_Severity", "Number_of_Vehicles", "Number_of_Casualties", "Date", "Day_of_Week", "Time", "Local_Authority_(District)", "Local_Authority_(Highway)", "1st_Road_Class", "1st_Road_Number", "Road_Type", "Speed_limit", "Junction_Detail", "Junction_Control", "2nd_Road_Class", "2nd_Road_Number", "Pedestrian_Crossing-Human_Control", "Pedestrian_Crossing-Physical_Facilities", "Light_Conditions", "Weather_Conditions", "Road_Surface_Conditions", "Special_Conditions_at_Site", "Carriageway_Hazards", "Urban_or_Rural_Area", "Did_Police_Officer_Attend_Scene_of_Accident", "LSOA_of_Accident_Location", "X", "Y")
+
 
 # Print csv for 2km Limit from any traffic point.
 

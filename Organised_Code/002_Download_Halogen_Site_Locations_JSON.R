@@ -42,7 +42,10 @@ sites = sites[!(duplicated(sites$`Geographic Address`) | duplicated(sites$`Geogr
 
 # Remove Sliproads
 
-sites = sites[!grepl("K", sites) & !grepl("J", sites) & !grepl("L", sites) & !endsWith("M", sites)]
+# sites = sites[!grepl("^.+(K)$", sites$`Geographic Address`) & !grepl("^.+(J)$", sites$`Geographic Address`) & !grepl("^.+(L)$", sites$`Geographic Address`) & !grepl("^.+(M)$",sites$`Geographic Address`),]
+
+sites = sites[grepl("^.+(A)$", sites$`Geographic Address`) | grepl("^.+(B)$", sites$`Geographic Address`),]
+
 
 # Output Site Locations
 

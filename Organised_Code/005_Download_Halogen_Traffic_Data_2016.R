@@ -1,4 +1,5 @@
-# Download Halogen Data in 2016 from midas Site
+# Download Halogen Data in 2016 from midas Site - Takes a few hours to run dependant on Internet Speed.
+# Only run if don't have a local copy of the Halogen Data.
 
 # Inputs:
 #   Username and Password
@@ -6,7 +7,7 @@
 
 # Outputs:
 #   tcd.bz2 files of MIDAS Data, seperated by CO and date
-#   Run Batch file to turn tcd.bz2 into tcd
+#   Run extract_tcd_Auto_to_tcd_only Batch file to turn tcd.bz2 into tcd
 #   Warning - Output of 2016 around 75Gb in tcd format
 
 
@@ -71,3 +72,4 @@ for(a in seq(length(CO))){
                con = filepaths[i])
   }
 }
+
