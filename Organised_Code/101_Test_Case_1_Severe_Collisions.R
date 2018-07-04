@@ -37,38 +37,38 @@ DSL4 = ggplot(data = TC1TD, aes(x = `Time GMT`)) +
 DOL1 = ggplot(data = TC1TD, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Occupancy Lane 1`), colour = "blue") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2) +
-  ylim(c(0, 170))
+  ylim(c(0, 100))
 DOL2 = ggplot(data = TC1TD, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Occupancy Lane 2`), colour = "red") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
-  ylim(c(0, 170))
+  ylim(c(0, 100))
 DOL3 = ggplot(data = TC1TD, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Occupancy Lane 3`), colour = "green") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
-  ylim(c(0, 170))
+  ylim(c(0, 100))
 DOL4 = ggplot(data = TC1TD, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Occupancy Lane 4`), colour = "purple") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
-  ylim(c(0, 170))
+  ylim(c(0, 100))
 
 # Headway
 
 DHL1 = ggplot(data = TC1TD, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Average Headway Lane 1`), colour = "blue") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2) +
-  ylim(c(0, 170))
+  ylim(c(0, 260))
 DHL2 = ggplot(data = TC1TD, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Average Headway Lane 2`), colour = "red") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
-  ylim(c(0, 170))
+  ylim(c(0, 260))
 DHL3 = ggplot(data = TC1TD, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Average Headway Lane 3`), colour = "green") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
-  ylim(c(0, 170))
+  ylim(c(0, 260))
 DHL4 = ggplot(data = TC1TD, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Average Headway Lane 4`), colour = "purple") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
-  ylim(c(0, 170))
+  ylim(c(0, 260))
 
 
 grid.arrange(DSL1, DSL2, DSL3, DSL4,DOL1, DOL2, DOL3, DOL4, DHL1, DHL2, DHL3, DHL4, nrow = 3, ncol = 4, top = "M1/2516B Downstream of Collision")
@@ -103,66 +103,104 @@ USL4 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
 UOL1 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Occupancy Lane 1`), colour = "blue") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2) +
-  ylim(c(0, 170))
+  ylim(c(0, 100))
 UOL2 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Occupancy Lane 2`), colour = "red") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
-  ylim(c(0, 170))
+  ylim(c(0, 100))
 UOL3 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Occupancy Lane 3`), colour = "green") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
-  ylim(c(0, 170))
+  ylim(c(0, 100))
 UOL4 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Occupancy Lane 4`), colour = "purple") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
-  ylim(c(0, 170))
+  ylim(c(0, 100))
 
 # Headway
 
 UHL1 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Average Headway Lane 1`), colour = "blue") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2) +
-  ylim(c(0, 170))
+  ylim(c(0, 260))
 UHL2 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Average Headway Lane 2`), colour = "red") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
-  ylim(c(0, 170))
+  ylim(c(0, 260))
 UHL3 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Average Headway Lane 3`), colour = "green") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
-  ylim(c(0, 170))
+  ylim(c(0, 260))
 UHL4 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Average Headway Lane 4`), colour = "purple") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
-  ylim(c(0, 170))
+  ylim(c(0, 260))
 
 
 grid.arrange(USL1, USL2, USL3, USL4,UOL1, UOL2, UOL3, UOL4, UHL1, UHL2, UHL3, UHL4, nrow = 3, ncol = 4, top = "M1/2519B Upstream of Collision")
 
 # Accident Profile eg3 - Severity 2 - Rubbernecking
 
-eg3 = jan28_spatial_2[jan28_spatial_2$`Geographic Address` == "M1/2516A",]
-eg3$`Average Speed Lane 3` = as.integer(eg3$`Average Speed Lane 3`)
-eg3$`Average Speed Lane 4` = as.integer(eg3$`Average Speed Lane 4`)
+TC1TR = halo_spatial[halo_spatial$`Geographic Address` == "M1/2516A",]
+TC1buffer = st_buffer(TC1TR, 500)
+TC1A = stat19_date[TC1buffer,]
 
-unique(eg3$`Average Speed Lane 4`)
+# Speed
 
-p5 = ggplot(data = eg3, aes(x = `Time GMT`)) +
+RSL1 = ggplot(data = TC1TR, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Average Speed Lane 1`), colour = "blue") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2) +
   ylim(c(0, 170))
-p6 = ggplot(data = eg3, aes(x = `Time GMT`)) +
+RSL2 = ggplot(data = TC1TR, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Average Speed Lane 2`), colour = "red") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
   ylim(c(0, 170))
-p7 = ggplot(data = eg3, aes(x = `Time GMT`)) +
+RSL3 = ggplot(data = TC1TR, aes(x = `Time GMT`)) +
   geom_point(mapping = aes(y = `Average Speed Lane 3`), colour = "green") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
   ylim(c(0, 170))
-p9 = ggplot(data = eg3, aes(x = `Time GMT`)) +
-  geom_point(mapping = aes(y = `Average Speed Lane 4`), colour = "yellow") +
+RSL4 = ggplot(data = TC1TR, aes(x = `Time GMT`)) +
+  geom_point(mapping = aes(y = `Average Speed Lane 4`), colour = "purple") +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
   ylim(c(0, 170))
 
-grid.arrange(p5, p6, p7, p9, nrow = 1)
+# Occupancy
 
+ROL1 = ggplot(data = TC1TR, aes(x = `Time GMT`)) +
+  geom_point(mapping = aes(y = `Occupancy Lane 1`), colour = "blue") +
+  geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2) +
+  ylim(c(0, 100))
+ROL2 = ggplot(data = TC1TR, aes(x = `Time GMT`)) +
+  geom_point(mapping = aes(y = `Occupancy Lane 2`), colour = "red") +
+  geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
+  ylim(c(0, 100))
+ROL3 = ggplot(data = TC1TR, aes(x = `Time GMT`)) +
+  geom_point(mapping = aes(y = `Occupancy Lane 3`), colour = "green") +
+  geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
+  ylim(c(0, 100))
+ROL4 = ggplot(data = TC1TR, aes(x = `Time GMT`)) +
+  geom_point(mapping = aes(y = `Occupancy Lane 4`), colour = "purple") +
+  geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
+  ylim(c(0, 100))
+
+# Headway
+
+RHL1 = ggplot(data = TC1TR, aes(x = `Time GMT`)) +
+  geom_point(mapping = aes(y = `Average Headway Lane 1`), colour = "blue") +
+  geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2) +
+  ylim(c(0, 260))
+RHL2 = ggplot(data = TC1TR, aes(x = `Time GMT`)) +
+  geom_point(mapping = aes(y = `Average Headway Lane 2`), colour = "red") +
+  geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
+  ylim(c(0, 260))
+RHL3 = ggplot(data = TC1TR, aes(x = `Time GMT`)) +
+  geom_point(mapping = aes(y = `Average Headway Lane 3`), colour = "green") +
+  geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
+  ylim(c(0, 260))
+RHL4 = ggplot(data = TC1TR, aes(x = `Time GMT`)) +
+  geom_point(mapping = aes(y = `Average Headway Lane 4`), colour = "purple") +
+  geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
+  ylim(c(0, 260))
+
+
+grid.arrange(RSL1, RSL2, RSL3, RSL4,ROL1, ROL2, ROL3, ROL4, RHL1, RHL2, RHL3, RHL4, nrow = 3, ncol = 4, top = "M1/2516A 'Rubbernecking Effect' of Collision")
