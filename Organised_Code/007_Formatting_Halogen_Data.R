@@ -11,13 +11,13 @@ stat19 = st_as_sf(stat19, coords = c("X", "Y"), crs = 27700)
 # Highest Accident Dates
 
 severe = c(1,2)
-data = as.data.frame(stat19[stat19$Accident_Severity %in% severe, ])
+data = as.data.frame(stat19[stat19$Accident_Severity %in% severe & stat19$Road_Type == 3  & stat19$Junction_Detail == 0, ])
 tab = as.data.frame(table(data$Date))
 tab = tab[order(-tab$Freq, decreasing = FALSE),] 
 
 # Pick Date of Collision
 
-stat19_date = stat19[stat19$Date == "28/01/2016",]
+stat19_date = stat19[stat19$Date == "07/02/2016" & stat19$Accident_Severity %in% severe & stat19$Junction_Detail == 0 & stat19$Road_Type == 3,]
 stat19_date = st_as_sf(stat19_date, coords = c("X", "Y"), crs = 27700)
 buffer_stat19 = st_buffer(stat19_date, 500)
 
@@ -26,6 +26,11 @@ buffer_stat19 = st_buffer(stat19_date, 500)
 halo = as.data.frame(readr::read_csv(file.path("D:/Documents/5872M-Dissertation/Data/Halogen_Site_csv/", "2016-01-28.csv")))
 
 halo = as.data.frame(readr::read_csv(file.path("D:/Documents/5872M-Dissertation/Data/Halogen_Site_csv/", "2016-01-09.csv")))
+
+halo = as.data.frame(readr::read_csv(file.path("D:/Documents/5872M-Dissertation/Data/Halogen_Site_csv/", "2016-02-24.csv")))
+
+halo = as.data.frame(readr::read_csv(file.path("D:/Documents/5872M-Dissertation/Data/Halogen_Site_csv/", "2016-02-07.csv")))
+
 
 
 # Correct Columns
@@ -110,3 +115,8 @@ halo$`Average Headway Lane 6` = as.integer(halo$`Average Headway Lane 6`)
 # Make Spatial
 
 halo_spatial = st_as_sf(halo, coords = c("X", "Y"), crs = 27700)
+
+mapview::mapview(sites_nc) + mapview::mapview(stat19_date)
+
+sapply(halo, function(x) sum(is.na(x)))
+
