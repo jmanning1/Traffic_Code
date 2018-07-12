@@ -36,20 +36,20 @@ month= as.character(month)
 
 ####################Remove after run
 
-'%!in%' <- function(x,y)!('%in%'(x,y)) # https://stackoverflow.com/questions/5831794/opposite-of-in
-days_done = c("2016-03-02",
-              "2016-03-06",
-              "2016-03-08",
-              "2016-03-11",
-              "2016-03-12",
-              "2016-03-13",
-              "2016-03-16",
-              "2016-03-19",
-              "2016-03-21",
-              "2016-03-26",
-              "2016-03-31")
-
-month = month[month %!in% days_done]
+#'%!in%' <- function(x,y)!('%in%'(x,y)) # https://stackoverflow.com/questions/5831794/opposite-of-in
+#days_done = c("2016-03-02",
+#              "2016-03-06",
+#               "2016-03-08",
+#               "2016-03-11",
+#               "2016-03-12",
+#               "2016-03-13",
+#               "2016-03-16",
+#               "2016-03-19",
+#               "2016-03-21",
+#               "2016-03-26",
+#               "2016-03-31")
+# 
+#month = month[month %!in% days_done]
 
 ###################################
 

@@ -16,8 +16,12 @@ tab = as.data.frame(table(data$Date))
 tab = tab[order(-tab$Freq, decreasing = FALSE),] 
 
 # Pick Date of Collision
+#Specific Day
+stat19_date = stat19[stat19$Date == "28/01/2016" & stat19$Accident_Severity %in% severe & stat19$Junction_Detail == 0 & stat19$Road_Type == 3,]
 
-stat19_date = stat19[stat19$Date == "07/02/2016" & stat19$Accident_Severity %in% severe & stat19$Junction_Detail == 0 & stat19$Road_Type == 3,]
+# Specific Month
+stat19_date = stat19[month(stat19$Date) == 3 & stat19$Accident_Severity %in% severe & stat19$Junction_Detail == 0 & stat19$Road_Type == 3,]
+
 stat19_date = st_as_sf(stat19_date, coords = c("X", "Y"), crs = 27700)
 buffer_stat19 = st_buffer(stat19_date, 500)
 
@@ -51,9 +55,11 @@ colnames(halo) = c("Control Office","Geographic Address",
                    "Average Speed Lane 4","Total Flow Lane 4",
                    "Occupancy Lane 4","Average Headway Lane 4",
                    "Average Speed Lane 5","Total Flow Lane 5",
-                   "Occupancy Lane 5","Average Headway Lane 5",
-                   "Average Speed Lane 6","Total Flow Lane 6",
-                   "Occupancy Lane 6","Average Headway Lane 6")
+                   "Occupancy Lane 5","Average Headway Lane 5")#,
+                   #"Average Speed Lane 6","Total Flow Lane 6",
+                   #"Occupancy Lane 6","Average Headway Lane 6")
+
+halo$`Geographic Address` = trimws(halo$`Geographic Address`)
 
 # Get Site Geoms
 
@@ -78,23 +84,24 @@ coor$`Geographic Address` = as.character(coor$`Geographic Address`)
 # Run if Testing to get reduced Halogen Points
 
 sites_nc = osgb_sites[buffer_stat19, ]
-
+sites_nc_buffer = st_buffer(sites_nc, 500)
+stat19_nt = stat19_date[sites_nc_buffer,]
+stat19_date = stat19_nt
+bk = halo
 halo = halo[halo$`Geographic Address` %in% sites_nc$`Geographic Address`,]
 
 # Join Co-oridinates to Halogen Data
 
 halo = left_join(halo, coor, by = "Geographic Address")
 
-halo = as.data.frame(halo)
-
 # Needed if jan dataset
 
 halo = halo[is.na(halo$X) == FALSE & is.na(halo$Y) == FALSE,]
 
-halo
-
 # Format Halogen Dataset
-
+halo$Month = as.character(halo$Month)
+halo$Day = as.integer(as.character(halo$Day))
+halo$Year = as.integer(as.character(halo$Year))
 halo$`Average Speed Lane 3` = as.integer(halo$`Average Speed Lane 3`)
 halo$`Total Flow Lane 3` = as.integer(halo$`Total Flow Lane 3`)
 halo$`Occupancy Lane 3` = as.integer(halo$`Occupancy Lane 3`)
@@ -116,7 +123,7 @@ halo$`Average Headway Lane 6` = as.integer(halo$`Average Headway Lane 6`)
 
 halo_spatial = st_as_sf(halo, coords = c("X", "Y"), crs = 27700)
 
-mapview::mapview(sites_nc) + mapview::mapview(stat19_date)
+mapview::mapview(sites_nc) + mapview::mapview(collisions_today)
 
 sapply(halo, function(x) sum(is.na(x)))
 

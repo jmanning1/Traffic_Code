@@ -6,11 +6,23 @@ stat19_date$Datetime = ymd_hms(as.character(as.POSIXct(paste(stat19_date$Date, s
 
 # create a buffer for all accidents
 
-collisions_today = st_buffer(stat19_date, 500)
+collisions_today = stat19_date
 
 # Add New Columns for Random Forest Training Tests - 0 = False, 1 = True
 
-halo_spatial$Datetime = ymd_hms(as.character(as.POSIXct(paste(paste0(halo_spatial$Year, "-", halo_spatial$Month, "-", halo_spatial$Day),halo_spatial$`Time GMT`), format="%Y-%b-%d %H:%M:%S")))
+head(halo_spatial$`Time GMT`)
+
+halo_spatial$`Time GMT` = as.character(halo_spatial$`Time GMT`)
+
+# data.frame(names=halo_spatial$`Time GMT`,chr=apply(halo_spatial,9,nchar)[,9])
+
+# If Time GMT including Seconds
+
+halo_spatial$Datetime = ymd_hms(as.character(as.POSIXct(paste(paste0(halo_spatial$Year, "-", halo_spatial$Month, "-", halo_spatial$Day), halo_spatial$`Time GMT`), format="%Y-%b-%d %H:%M:%S")))
+
+# If Time GMT missing seconds
+
+halo_spatial$Datetime = ymd_hms(as.character(as.POSIXct(paste(paste0(halo_spatial$Year, "-", halo_spatial$Month, "-", halo_spatial$Day),paste0(halo_spatial$`Time GMT`, ":00")), format="%Y-%b-%d %H:%M:%S")))
 
 # Identify Intervals
 
@@ -31,7 +43,7 @@ for(i in seq(length(collisions_today$Datetime))) {
   inter = st_intersects(halo_spatial,cir)
   inter_logical = as.logical(inter)
   inter_logical[is.na(inter_logical)] = FALSE
-  After <- collisions_today$Datetime[i] %within% after_interval & inter_logical == TRUE
+  After <- collisions_today$Datetime[i] %within%  after_interval  & inter_logical == TRUE
   After = as.integer(After)
   if(i == 1){
     AfterLoop = After
@@ -43,10 +55,12 @@ for(i in seq(length(collisions_today$Datetime))) {
     BeforeLoop = Before
   } else {
     BeforeLoop = BeforeLoop + Before}
-  #jan28_spatial_2$After <- collisions_today$Datetime[i] %within% after_interval & inter_logical == TRUE
-  #jan28_spatial_2$Before <- collisions_today$Datetime[i] %within% before_interval & inter_logical == TRUE
 }
 halo_spatial$After = AfterLoop
 halo_spatial$Before = BeforeLoop
 
-write.csv(halo_spatial, file = "D:/Documents/5872M-Dissertation/Data/Geometries/test_Accident_Highlighting.csv",row.names=FALSE)
+table(halo_spatial$After)
+table(halo_spatial$Before)
+
+# write.csv(halo_spatial, file = "D:/Documents/5872M-Dissertation/Data/Geometries/test_Accident_Highlighting.csv",row.names=FALSE)
+
