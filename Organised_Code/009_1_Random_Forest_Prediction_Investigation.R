@@ -66,12 +66,14 @@ end_time <- Sys.time()
 
 end_time - start_time
 
-tree = myForest$ntree
+tree = current_Forest$ntree
 
-#prediction = (tree*prediction + 1)/(tree + 2)
+prediction = (tree*prediction + 1)/(tree + 2)
 
 testLL = sum(log(prediction[which(test_data$After==1)])) + sum(log(1-prediction[which(test_data$After==0)]))
 print(testLL)
+
+aic = 2*k - 2*testLL
 
 plot(test_data$Time, test_data$After)
 points(test_data$Time, prediction, col='blue')

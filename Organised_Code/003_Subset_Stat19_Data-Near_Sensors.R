@@ -44,6 +44,9 @@ roads_shape = st_read("D:/Documents/5872M-Dissertation/Data/Geometries/Roads/Lin
 
 osgb_roads = st_transform(roads_shape, crs = 27700)
 
+mapview::mapview(osgb_roads) + mapview::mapview(osgb_sites)
+
+
 
 # Run 001_Extract_Stat19_2016.R first tp get ac_sf
 

@@ -1,6 +1,13 @@
 # Load files
 
+# for march
+
 temp = list.files(path ="D:/Documents/5872M-Dissertation/Data/Halogen_Site_Severe/", pattern="*.csv", full.names = TRUE)
+
+# for 3 day window dataset
+
+temp = list.files(path ="D:/Documents/5872M-Dissertation/Data/Halogen_Severe_window/", pattern="*.csv", full.names = TRUE)
+
 
 #myfiles = lapply(temp, fread)
 

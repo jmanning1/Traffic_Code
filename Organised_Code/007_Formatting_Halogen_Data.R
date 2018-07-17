@@ -61,6 +61,8 @@ colnames(halo) = c("Control Office","Geographic Address",
 
 halo$`Geographic Address` = trimws(halo$`Geographic Address`)
 
+head(halo$`Geographic Address`)
+
 # Get Site Geoms
 
 sites = readr::read_csv(file.path("D:/Documents/5872M-Dissertation/Data/Geometries/", "Site_Locations.csv"))
@@ -114,10 +116,10 @@ halo$`Average Speed Lane 5` = as.integer(halo$`Average Speed Lane 5`)
 halo$`Total Flow Lane 5` = as.integer(halo$`Total Flow Lane 5`)
 halo$`Occupancy Lane 5` = as.integer(halo$`Occupancy Lane 5`)
 halo$`Average Headway Lane 5` = as.integer(halo$`Average Headway Lane 5`)
-halo$`Average Speed Lane 6` = as.integer(halo$`Average Speed Lane 6`)
-halo$`Total Flow Lane 6` = as.integer(halo$`Total Flow Lane 6`)
-halo$`Occupancy Lane 6` = as.integer(halo$`Occupancy Lane 6`)
-halo$`Average Headway Lane 6` = as.integer(halo$`Average Headway Lane 6`)
+# halo$`Average Speed Lane 6` = as.integer(halo$`Average Speed Lane 6`)
+# halo$`Total Flow Lane 6` = as.integer(halo$`Total Flow Lane 6`)
+# halo$`Occupancy Lane 6` = as.integer(halo$`Occupancy Lane 6`)
+# halo$`Average Headway Lane 6` = as.integer(halo$`Average Headway Lane 6`)
 
 # Make Spatial
 
@@ -126,4 +128,6 @@ halo_spatial = st_as_sf(halo, coords = c("X", "Y"), crs = 27700)
 mapview::mapview(sites_nc) + mapview::mapview(collisions_today)
 
 sapply(halo, function(x) sum(is.na(x)))
+
+# Set NA values to value indicating lack of data - Headway = 255, Speed = 0, Occupancy = 0, Total Flow
 
