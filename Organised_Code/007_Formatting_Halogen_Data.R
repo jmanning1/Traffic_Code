@@ -22,6 +22,11 @@ stat19_date = stat19[stat19$Date == "28/01/2016" & stat19$Accident_Severity %in%
 # Specific Month
 stat19_date = stat19[month(stat19$Date) == 3 & stat19$Accident_Severity %in% severe & stat19$Junction_Detail == 0 & stat19$Road_Type == 3,]
 
+
+# Severe Accidents All Year
+stat19_date = stat19[stat19$Accident_Severity %in% severe & stat19$Junction_Detail == 0 & stat19$Road_Type == 3,]
+
+
 stat19_date = st_as_sf(stat19_date, coords = c("X", "Y"), crs = 27700)
 buffer_stat19 = st_buffer(stat19_date, 500)
 
@@ -58,6 +63,27 @@ colnames(halo) = c("Control Office","Geographic Address",
                    "Occupancy Lane 5","Average Headway Lane 5")#,
                    #"Average Speed Lane 6","Total Flow Lane 6",
                    #"Occupancy Lane 6","Average Headway Lane 6")
+
+
+colnames(halo) = c("Control Office","Geographic Address",
+                   "Year","Month",
+                   "Day","Day of Week",
+                   "Type of Day","Days After Nearest Bank Holiday",
+                   "Time GMT","Number of Lanes",
+                   "Flow Category 1","Flow Category 2",
+                   "Flow Category 3","Flow Category 4",
+                   "Average Speed Lane 1","Total Flow Lane 1",
+                   "Occupancy Lane 1","Average Headway Lane 1",
+                   "Average Speed Lane 2","Total Flow Lane 2",
+                   "Occupancy Lane 2","Average Headway Lane 2",
+                   "Average Speed Lane 3","Total Flow Lane 3",
+                   "Occupancy Lane 3","Average Headway Lane 3",
+                   "Average Speed Lane 4","Total Flow Lane 4",
+                   "Occupancy Lane 4","Average Headway Lane 4",
+                   "Average Speed Lane 5","Total Flow Lane 5",
+                   "Occupancy Lane 5","Average Headway Lane 5",
+                   "Average Speed Lane 6","Total Flow Lane 6",
+                   "Occupancy Lane 6","Average Headway Lane 6")
 
 halo$`Geographic Address` = trimws(halo$`Geographic Address`)
 
@@ -121,13 +147,48 @@ halo$`Average Headway Lane 5` = as.integer(halo$`Average Headway Lane 5`)
 # halo$`Occupancy Lane 6` = as.integer(halo$`Occupancy Lane 6`)
 # halo$`Average Headway Lane 6` = as.integer(halo$`Average Headway Lane 6`)
 
+sapply(halo, function(x) sum(is.na(x)))
+
+# Set NA values to value indicating lack of data - Headway = 255, Speed = 0, Occupancy = 0, Total Flow
+
+# Speed
+halo$`Average Speed Lane 1`[is.na(halo$`Average Speed Lane 1`) == TRUE] = 0
+halo$`Average Speed Lane 2`[is.na(halo$`Average Speed Lane 2`) == TRUE] = 0
+halo$`Average Speed Lane 3`[is.na(halo$`Average Speed Lane 3`) == TRUE] = 0
+halo$`Average Speed Lane 4`[is.na(halo$`Average Speed Lane 4`) == TRUE] = 0
+halo$`Average Speed Lane 5`[is.na(halo$`Average Speed Lane 5`) == TRUE] = 0
+
+# Headway
+
+halo$`Average Headway Lane 1`[is.na(halo$`Average Headway Lane 1`) == TRUE] = 255
+halo$`Average Headway Lane 2`[is.na(halo$`Average Headway Lane 2`) == TRUE] = 255
+halo$`Average Headway Lane 3`[is.na(halo$`Average Headway Lane 3`) == TRUE] = 255
+halo$`Average Headway Lane 4`[is.na(halo$`Average Headway Lane 4`) == TRUE] = 255
+halo$`Average Headway Lane 5`[is.na(halo$`Average Headway Lane 5`) == TRUE] = 255
+
+# Occupancy
+
+halo$`Occupancy Lane 1`[is.na(halo$`Occupancy Lane 1`) == TRUE] = 0
+halo$`Occupancy Lane 2`[is.na(halo$`Occupancy Lane 2`) == TRUE] = 0
+halo$`Occupancy Lane 3`[is.na(halo$`Occupancy Lane 3`) == TRUE] = 0
+halo$`Occupancy Lane 4`[is.na(halo$`Occupancy Lane 4`) == TRUE] = 0
+halo$`Occupancy Lane 5`[is.na(halo$`Occupancy Lane 5`) == TRUE] = 0
+
+# Total Flow
+
+halo$`Total Flow Lane 1`[is.na(halo$`Total Flow Lane 1`) == TRUE] = 0
+halo$`Total Flow Lane 2`[is.na(halo$`Total Flow Lane 2`) == TRUE] = 0
+halo$`Total Flow Lane 3`[is.na(halo$`Total Flow Lane 3`) == TRUE] = 0
+halo$`Total Flow Lane 4`[is.na(halo$`Total Flow Lane 4`) == TRUE] = 0
+halo$`Total Flow Lane 5`[is.na(halo$`Total Flow Lane 5`) == TRUE] = 0
+
+sapply(halo, function(x) sum(is.na(x)))
+
 # Make Spatial
 
 halo_spatial = st_as_sf(halo, coords = c("X", "Y"), crs = 27700)
 
 mapview::mapview(sites_nc) + mapview::mapview(collisions_today)
 
-sapply(halo, function(x) sum(is.na(x)))
 
-# Set NA values to value indicating lack of data - Headway = 255, Speed = 0, Occupancy = 0, Total Flow
 

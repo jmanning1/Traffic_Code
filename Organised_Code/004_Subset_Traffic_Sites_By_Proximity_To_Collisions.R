@@ -1,5 +1,7 @@
 #Identify Traffic Sensor Sites within 500m of an collision
 
+# Don't think Needed
+
 # Inputs:
 # Site_Locations.csv
 # Formatted Stat19 Data

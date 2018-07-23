@@ -4,9 +4,14 @@
 
 temp = list.files(path ="D:/Documents/5872M-Dissertation/Data/Halogen_Site_Severe/", pattern="*.csv", full.names = TRUE)
 
-# for 3 day window dataset
+# for 3 day window dataset 500m
 
 temp = list.files(path ="D:/Documents/5872M-Dissertation/Data/Halogen_Severe_window/", pattern="*.csv", full.names = TRUE)
+
+
+# for 3 day window dataset 2km
+
+temp = list.files(path ="D:/Documents/5872M-Dissertation/Data/Halogen_Severe_window_2km/", pattern="*.csv", full.names = TRUE)
 
 
 #myfiles = lapply(temp, fread)

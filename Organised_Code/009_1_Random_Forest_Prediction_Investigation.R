@@ -1,14 +1,131 @@
+# Load Data with After before
+
+halo_spatial = readr::read_csv(file.path("D:/Documents/5872M-Dissertation/Data/Geometries/", "Halogen_2016_With_After_Before_15mins.csv"))
+
 # Random Forest Model build
 
 table(halo_spatial$After)
 
+table(is.na(halo_spatial$After))
+
+halo_spatial = halo_spatial[is.na(halo_spatial$Datetime) == FALSE, ]
+
 # Identify any Troublesome NAs
 
-sapply(halo, function(x) sum(is.na(x)))
+sapply(halo_spatial, function(x) sum(is.na(x)))
 
 # After Data, 3 lanes and After Column
 
-mydata = halo_spatial[,c(2,9,15:26,37)]
+variables = c("Average_Speed_Lane_1","Total_Flow_Lane_1","Occupancy_Lane_1","Average_Headway_Lane_1",
+              "Average_Speed_Lane_2","Total_Flow_Lane_2","Occupancy_Lane_2","Average_Headway_Lane_2",
+              "Average_Speed_Lane_3","Total_Flow_Lane_3","Occupancy_Lane_3","Average_Headway_Lane_3")
+
+outputs = c("Before", "After")
+
+mydata = halo_spatial
+
+coor = st_coordinates(mydata$geometry)
+
+mydata = cbind(mydata, coor)
+
+mydata$geometry = NULL
+rm(coor)
+
+
+colnames(mydata) = c("Control_Office","Geographic_Address","Year",
+                     "Month","Day","Day_of_Week",
+                     "Type_of_Day","Days_After_Nearest_Bank_Holiday","Time_GMT",
+                     "Number_of_Lanes","Flow_Category_1","Flow_Category_2",
+                     "Flow_Category_3","Flow_Category_4","Average_Speed_Lane_1",
+                     "Total_Flow_Lane_1","Occupancy_Lane_1","Average_Headway_Lane_1",
+                     "Average_Speed_Lane_2","Total_Flow_Lane_2","Occupancy_Lane_2",
+                     "Average_Headway_Lane_2","Average_Speed_Lane_3","Total_Flow_Lane_3",
+                     "Occupancy_Lane_3","Average_Headway_Lane_3","Average_Speed_Lane_4",
+                     "Total_Flow_Lane_4","Occupancy_Lane_4","Average_Headway_Lane_4",
+                     "Average_Speed_Lane_5","Total_Flow_Lane_5","Occupancy_Lane_5",
+                     "Average_Headway_Lane_5","Datetime",
+                     "After","Before", "X", "Y", "AveSpeed")
+
+idx = sample(nrow(mydata), 2750000) # Greater than Half of sample
+
+mydata$After = as.factor(mydata$After)
+
+train_data = mydata[idx, ]
+table(train_data$After)
+
+test_data = mydata[-idx, ]
+
+start_time <- Sys.time()
+
+for (i in 2:length(variables)){
+  # Print Variable to identify loop location
+  print(variables[i])
+  # Random Forest Model
+  #table(is.na(halo_spatial$After))
+  train_data_form = data.frame(Y = train_data$After, X = train_data[,variables[i]])
+  colnames(train_data_form) = c("Y", "X")
+  # Create Random Forest Model on Training Data
+  # current_Forest = randomForest(formula = Y ~ X, data = train_data_form, ntree = 10)
+  # for (k in 1:49) {
+  #   next_Forest = randomForest(formula = Y ~ X, data = train_data_form, ntree = 10)
+  #   current_Forest = combine(current_Forest, next_Forest)
+  # }
+  # pred = predict(current_Forest, newdata=train_data_form, type = "response")
+  
+  current_Forest = randomForest(formula = After ~ Average_Speed_Lane_1 + Average_Speed_Lane_2 + Average_Speed_Lane_3, data = train_data, ntree = 10)
+  for (k in 1:49) {
+    next_Forest = randomForest(formula = After ~ Average_Speed_Lane_1 + Average_Speed_Lane_2 + Average_Speed_Lane_3, data = train_data, ntree = 10)
+    current_Forest = combine(current_Forest, next_Forest)
+  }
+  
+  current_Forest = randomForest(formula = After ~ AveSpeed, data = train_data, ntree = 10)
+  for (k in 1:49) {
+    next_Forest = randomForest(formula = After ~ AveSpeed, data = train_data, ntree = 10)
+    current_Forest = combine(current_Forest, next_Forest)
+  }
+
+  
+  # Predict Probability using model based on Test Data
+  pred = predict(current_Forest, newdata=train_data, type = "response")
+  pred_test = predict(current_Forest, newdata=test_data, type = "response")
+  #pred = predict(current_Forest, newdata=test_data, type = "response")
+  #end_time <- Sys.time()
+  
+  # end_time - start_time
+  # # Calculate number of trees
+  # numtrees = current_Forest$ntree
+  # # Add one correct and incorrect value to stop prediction being 0 or 1 exactly
+  # pred = (numtrees*pred + 1)/(numtrees +2)
+  # # Use Edible to compare
+  # pred = pred[ ,1]
+  # # Calculate log likelihood
+  # testLL = sum(log(pred[which(mydata$After == "1")]), na.rm=T) + sum(1 - log(pred[which(mydata$After == "0")]), na.rm=T)
+  # # Print Results - Log Likelihood closest to 0 is the best factor
+  # print(paste("Predictive Log-Likelihood = ", testLL))
+  # results = round(pred, 0)
+  # print(paste("Correct Number of Predictions: ", length(which(test_data$After == pred))))
+  # print(paste("Correct Number of Predictions where 1: ", length(which(test_data$After == pred & test_data$After == 1))))
+  # cm = table(test_data$After, pred)
+  # cm = table(train_data_form$Y, pred)
+  # print("Confusion Matrix Train")
+  # print(cm)
+  # print("---------------------")
+  cm = table(train_data$After, pred)
+  print("Confusion Matrix Train")
+  print(cm)
+  print("---------------------")
+  cm = table(test_data$After, pred_test)
+  print("Confusion Matrix Test")
+  print(cm)
+  print("---------------------")
+}
+
+end_time <- Sys.time()
+  
+end_time - start_time
+
+
+mydata = halo_spatial
 geom = mydata$geometry
 mydata$geometry = NULL
 nrow(mydata)/ 2

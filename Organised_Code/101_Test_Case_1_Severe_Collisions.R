@@ -136,6 +136,25 @@ UHL4 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
   geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
   ylim(c(0, 260))
 
+# Total Flow
+
+UHL1 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
+  geom_point(mapping = aes(y = `Total Flow Lane 1`), colour = "blue") +
+  geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2) +
+  ylim(c(0, 260))
+UHL2 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
+  geom_point(mapping = aes(y = `Total Flow Lane 2`), colour = "red") +
+  geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
+  ylim(c(0, 260))
+UHL3 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
+  geom_point(mapping = aes(y = `Total Flow Lane 3`), colour = "green") +
+  geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
+  ylim(c(0, 260))
+UHL4 = ggplot(data = TC1TU, aes(x = `Time GMT`)) +
+  geom_point(mapping = aes(y = `Total Flow Lane 4`), colour = "purple") +
+  geom_point(data = TC1A, mapping = aes(x = `Time`,y = 50), size = 2)  +
+  ylim(c(0, 260))
+
 
 grid.arrange(USL1, USL2, USL3, USL4,UOL1, UOL2, UOL3, UOL4, UHL1, UHL2, UHL3, UHL4, nrow = 3, ncol = 4, top = "M1/2519B Upstream of Collision")
 

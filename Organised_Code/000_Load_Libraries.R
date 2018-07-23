@@ -22,3 +22,5 @@ library(sf)
 library(stplanr)
 library(stringr)
 library(ukboundaries)
+library(mapdata)
+

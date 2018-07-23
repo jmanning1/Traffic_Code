@@ -106,3 +106,13 @@ format_stats19_ac_2016(ac)
 ac = ac[!is.na(ac$Longitude), ]                                                               
 ac_sf = st_as_sf(ac, coords = c("Longitude", "Latitude"), crs = 4326) 
 
+
+map <- get_map(location = c(lon = -2.5, lat =  54.2), zoom = 6, maptype = "satellite")
+
+new_buffer = st_transform(new_buffer, crs = 4326)
+
+
+
+ggmap(map) + 
+  geom_point(data = ac, aes(x = Longitude, y = Latitude, colour = "grey")) + 
+  geom_point(data = output, aes(x = X, y = Y, colour = "red")) 
