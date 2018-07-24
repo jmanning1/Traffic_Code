@@ -36,6 +36,7 @@ osgb_sites = st_transform(ac_sites, crs = 27700)
 
 buffer = st_buffer(osgb_sites, 2000)
 
+
 # Load Roads
 
 roads_shape = st_read("D:/Documents/5872M-Dissertation/Data/Geometries/Roads/Links_nmv5_WP104_INRIX.shp")
@@ -60,11 +61,28 @@ osgb_stat19 = osgb_stat19[osgb_stat19$`1st_Road_Class` %in% road_types,]
 
 ac_buffer = osgb_stat19[buffer, ]
 
+# Record the points on the network not in site of Traffic Sites
+
+lost = sapply(st_intersects(osgb_stat19, buffer),function(x){length(x)==0})
+
+outside_stat19 = osgb_stat19[lost,]
+
 # Buffer road by 200m
 
 buffer_road = st_buffer(osgb_roads, 100)
 
 new_buffer = ac_buffer[buffer_road, ]
+
+# Lost on network only
+
+outside_stat19 = outside_stat19[buffer_road, ]
+
+ggplot(data = outside_stat19, aes(Location_Easting_OSGR, Location_Northing_OSGR)) +
+  geom_point(colour = outside_stat19$Accident_Severity)
+
+potential_high_collisions = table(cut(outside_stat19$Location_Easting_OSGR, 100), cut(outside_stat19$Location_Northing_OSGR,100))
+
+image2D(z = potential_high_collisions, border = "black")
 
 # Extract Co-ordinates from Geometry to Output into csv.
 

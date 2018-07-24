@@ -74,7 +74,7 @@ write.csv(output, file = "D:/Documents/5872M-Dissertation/Data/Geometries/Haloge
 Speed = data.frame(Ave1 = halo_spatial$Average_Speed_Lane_1, Ave2 = halo_spatial$Average_Speed_Lane_2, Ave3 = halo_spatial$Average_Speed_Lane_3, Ave4 = halo_spatial$Average_Speed_Lane_4, Ave5 = halo_spatial$Average_Speed_Lane_5)
 Occupancy = data.frame(Ave1 = halo_spatial$Occupancy_Lane_1, Ave2 = halo_spatial$Occupancy_Lane_2, Ave3 = halo_spatial$Average_Speed_Lane_3, Ave4 = halo_spatial$Average_Speed_Lane_4, Ave5 = halo_spatial$Average_Speed_Lane_5)
 Headway = data.frame(Ave1 = halo_spatial$Average_Headway_Lane_1, Ave2 = halo_spatial$Average_Headway_Lane_2, Ave3 = halo_spatial$Average_Headway_Lane_3, Ave4 = halo_spatial$Average_Headway_Lane_4, Ave5 = halo_spatial$Average_Headway_Lane_5)
-
+TotalFlow = data.frame(Ave1 = halo_spatial$Total_Flow_Lane_1, Ave2 = halo_spatial$Total_Flow_Lane_2, Ave3 = halo_spatial$Total_Flow_Lane_3, Ave4 = halo_spatial$Total_Flow_Lane_4, Ave5 = halo_spatial$Total_Flow_Lane_5)
 
 
 Speed[Speed$Ave1 == 255,] = 0
@@ -88,8 +88,6 @@ Occupancy[Occupancy$Ave2 == 255,] = 0
 Occupancy[Occupancy$Ave3 == 255,] = 0
 Occupancy[Occupancy$Ave4 == 255,] = 0
 Occupancy[Occupancy$Ave5 == 255,] = 0
-
-# Maybe
 
 Headway[Headway$Ave1 == 255,] = 0
 Headway[Headway$Ave2 == 255,] = 0
@@ -112,13 +110,62 @@ myrowmean <- function(x) {
 AveSpeed = as.data.frame(apply(Speed,1,myrowmean))
 colnames(AveSpeed) = c("AveSpeed")
 
+AveOccupancy = as.data.frame(apply(Occupancy,1,myrowmean))
+colnames(AveOccupancy) = c("AveOccupancy")
+
+AveHeadway = as.data.frame(apply(Headway,1,myrowmean))
+colnames(AveHeadway) = c("AveHeadway")
+
+AveTotalFlow = as.data.frame(apply(TotalFlow,1,myrowmean))
+colnames(AveTotalFlow) = c("AveTotalFlow")
+
 halo_spatial$AveSpeed = AveSpeed$AveSpeed
+halo_spatial$AveOccupancy = AveOccupancy$AveOccupancy
+halo_spatial$AveHeadway = AveHeadway$AveHeadway
+halo_spatial$AveTotalFlow = AveTotalFlow$AveTotalFlow
 
-ggplot(halo_spatial, aes(factor(After), AveSpeed)) + 
-  geom_violin()
 
-AveSpeed = rowMeans(Speed[Speed != 0 & Speed!= 255,])
 
-Speed = data.frame(Ave1 = halo_spatial$`Average Speed Lane 1`, Ave2 = halo_spatial$`Average Speed Lane 2`, Ave3 = halo_spatial$`Average Speed Lane 3`, Ave4 = halo_spatial$`Average Speed Lane 4`, Ave5 = halo_spatial$`Average Speed Lane 5`)
+no_0_Speed = halo_spatial[halo_spatial$AveSpeed != 0, ]
+no_0_Occupancy = halo_spatial[halo_spatial$AveOccupancy != 0, ]
+no_0_Headway = halo_spatial[halo_spatial$AveHeadway != 0, ]
+no_0_TotalFlow = halo_spatial[halo_spatial$AveTotalFlow != 0, ]
 
-AveSpeed = rowMeans(Speed[Speed != 0 & Speed!= 255])
+
+table(no_0$After)
+
+# Violins of results After
+
+pl1 = ggplot(no_0_Speed, aes(factor(After), AveSpeed)) + 
+  geom_violin(aes(fill = factor(After)), draw_quantiles = c(0.25, 0.5, 0.75))
+
+pl2 = ggplot(no_0_Occupancy, aes(factor(After), AveOccupancy)) + 
+  geom_violin(aes(fill = factor(After)), draw_quantiles = c(0.25, 0.5, 0.75))
+
+pl3 = ggplot(no_0_Headway, aes(factor(After), AveHeadway)) + 
+  geom_violin(aes(fill = factor(After)), draw_quantiles = c(0.25, 0.5, 0.75))
+
+pl4 = ggplot(no_0_TotalFlow, aes(factor(After), AveTotalFlow)) + 
+  geom_violin(aes(fill = factor(After)), draw_quantiles = c(0.25, 0.5, 0.75))
+
+# Violins of results Before
+
+pl5 = ggplot(no_0_Speed, aes(factor(Before), AveSpeed)) + 
+  geom_violin(aes(fill = factor(Before)), draw_quantiles = c(0.25, 0.5, 0.75))
+
+pl6 = ggplot(no_0_Occupancy, aes(factor(Before), AveOccupancy)) + 
+  geom_violin(aes(fill = factor(Before)), draw_quantiles = c(0.25, 0.5, 0.75))
+
+pl7 = ggplot(no_0_Headway, aes(factor(Before), AveHeadway)) + 
+  geom_violin(aes(fill = factor(Before)), draw_quantiles = c(0.25, 0.5, 0.75))
+
+pl8 = ggplot(no_0_TotalFlow, aes(factor(Before), AveTotalFlow)) + 
+  geom_violin(aes(fill = factor(Before)), draw_quantiles = c(0.25, 0.5, 0.75))
+
+grid.arrange(pl1, pl2, pl3, pl4,pl5, pl6, pl7, pl8, nrow = 2, ncol = 4, top = "Density of Data Points")
+
+
+mean(halo_spatial$AveSpeed[halo_spatial$After == 0 & halo_spatial$AveSpeed != 0])
+mean(halo_spatial$AveSpeed[halo_spatial$After == 1 & halo_spatial$AveSpeed != 0])
+mean(halo_spatial$AveSpeed[halo_spatial$Before == 0 & halo_spatial$AveSpeed != 0])
+mean(halo_spatial$AveSpeed[halo_spatial$Before == 1 & halo_spatial$AveSpeed != 0])

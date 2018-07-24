@@ -7,10 +7,43 @@
 # library(ggplot2)
 # library(gridExtra)
 
+jan28 = as.data.frame(halo_spatial[date(halo_spatial$Datetime) == "2016-01-28",])
+head(jan28)
+colnames(jan28) = c("Control Office","Geographic Address",
+                   "Year","Month",
+                   "Day","Day of Week",
+                   "Type of Day","Days After Nearest Bank Holiday",
+                   "Time GMT","Number of Lanes",
+                   "Flow Category 1","Flow Category 2",
+                   "Flow Category 3","Flow Category 4",
+                   "Average Speed Lane 1","Total Flow Lane 1",
+                   "Occupancy Lane 1","Average Headway Lane 1",
+                   "Average Speed Lane 2","Total Flow Lane 2",
+                   "Occupancy Lane 2","Average Headway Lane 2",
+                   "Average Speed Lane 3","Total Flow Lane 3",
+                   "Occupancy Lane 3","Average Headway Lane 3",
+                   "Average Speed Lane 4","Total Flow Lane 4",
+                   "Occupancy Lane 4","Average Headway Lane 4",
+                   "Average Speed Lane 5","Total Flow Lane 5",
+                   "Occupancy Lane 5","Average Headway Lane 5", 
+                   "After", "Before",
+                   "X", "Y",
+                   "AveSpeed","AveOccupancy", 
+                   "AveHeadway", "AveTotalFlow")
+
+jan28 = st_as_sf(jan28, coords = c("X", "Y"), crs = 27700)
+
+stat19_date = stat19[stat19$Date == "2016-01-28" & stat19$Accident_Severity %in% c(1,2) & stat19$Junction_Detail == 0 & stat19$Road_Type == 3,]
+stat19_date = st_as_sf(stat19_date, coords = c("X", "Y"), crs = 27700)
+
+
+
 # Accident Profile M1/2516B - Severity 2 - Downstream
 
-TC1TD = halo_spatial[halo_spatial$`Geographic Address` == "M1/2516B",]
+TC1TD = jan28[jan28$`Geographic Address` == "M1/2516B",]
 TC1buffer = st_buffer(TC1TD, 500)
+TC1A = stat19_date[stat19_date$Accident_Index == "2016406CA0222",]
+
 TC1A = stat19_date[TC1buffer,]
 
 # Speed
@@ -75,8 +108,10 @@ grid.arrange(DSL1, DSL2, DSL3, DSL4,DOL1, DOL2, DOL3, DOL4, DHL1, DHL2, DHL3, DH
 
 # Accident Profile M1/2519B - Severity 2 - Upstream
 
-TC1TU = halo_spatial[halo_spatial$`Geographic Address` == "M1/2519B",]
+TC1TU = jan28[jan28$`Geographic Address` == "M1/2519B",]
 TC1buffer = st_buffer(TC1TU, 500)
+TC1A = stat19_date[stat19_date$Accident_Index == "2016406CA0222",]
+
 TC1A = stat19_date[TC1buffer,]
 
 # Speed
@@ -160,7 +195,7 @@ grid.arrange(USL1, USL2, USL3, USL4,UOL1, UOL2, UOL3, UOL4, UHL1, UHL2, UHL3, UH
 
 # Accident Profile eg3 - Severity 2 - Rubbernecking
 
-TC1TR = halo_spatial[halo_spatial$`Geographic Address` == "M1/2516A",]
+TC1TR = jan28[jan28$`Geographic Address` == "M1/2516A",]
 TC1buffer = st_buffer(TC1TR, 500)
 TC1A = stat19_date[TC1buffer,]
 
