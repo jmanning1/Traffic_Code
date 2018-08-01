@@ -98,3 +98,33 @@ colnames(output) = c("Accident_Index", "Location_Easting_OSGR", "Location_Northi
 # Print csv for 2km Limit from any traffic point.
 
 write.csv(output, file = "D:/Documents/5872M-Dissertation/Data/Geometries/Stat19_2016_2km_Subset.csv",row.names=FALSE)
+
+
+# Histograms
+
+# Within 2km of Webtris Locations
+
+t1 = qplot(output$Time, bins = 24)
+tsl = qplot(output$Time[output$Accident_Severity == 3], bins = 24)
+tse = qplot(output$Time[output$Accident_Severity == 2], bins = 24)
+tfa = qplot(output$Time[output$Accident_Severity == 1], bins = 24)
+
+grid.arrange(t1,tsl,tse,tfa, nrow = 1, ncol = 4)
+
+y1 = qplot(output$Date, bins = 366)
+ysl = qplot(output$Date[output$Accident_Severity == 3], bins = 366)
+yse = qplot(output$Date[output$Accident_Severity == 2], bins = 366)
+yfa = qplot(output$Date[output$Accident_Severity == 1], bins = 366)
+y2 = qplot(output$Date, bins = 52)
+ysl2 = qplot(output$Date[output$Accident_Severity == 3], bins = 52)
+yse2 = qplot(output$Date[output$Accident_Severity == 2], bins = 52)
+yfa2 = qplot(output$Date[output$Accident_Severity == 1], bins = 52)
+
+grid.arrange(y1,ysl,yse,yfa,y2,ysl2,yse2,yfa2, nrow = 2, ncol = 4)
+
+d1 = qplot(output$Day_of_Week, bins = 7)
+dsl = qplot(output$Day_of_Week[output$Accident_Severity == 3], bins = 7)
+dse = qplot(output$Day_of_Week[output$Accident_Severity == 2], bins = 7)
+dfa = qplot(output$Day_of_Week[output$Accident_Severity == 1], bins = 7)
+
+grid.arrange(d1,dsl,dse,dfa, nrow = 1, ncol = 4)

@@ -12,7 +12,7 @@ stat19 = as.data.frame(stat19[stat19$Accident_Severity %in% severe & stat19$Road
 
 stat19_spatial = st_as_sf(stat19, coords = c("X", "Y"), crs = 27700)
 
-stat19_buffer = st_buffer(stat19_spatial, 2000)
+stat19_buffer = st_buffer(stat19_spatial, 500)
 
 #Extract Sites
 

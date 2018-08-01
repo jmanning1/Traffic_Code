@@ -2,6 +2,20 @@
 
 halo_spatial = readr::read_csv(file.path("D:/Documents/5872M-Dissertation/Data/Geometries/", "Halogen_2016_With_After_Before.csv"))
 halo_spatial = as.data.frame(halo_spatial)
+colnames(halo_spatial) = c("Control_Office","Geographic_Address","Year",
+                     "Month","Day","Day_of_Week",
+                     "Type_of_Day","Days_After_Nearest_Bank_Holiday","Time_GMT",
+                     "Number_of_Lanes","Flow_Category_1","Flow_Category_2",
+                     "Flow_Category_3","Flow_Category_4","Average_Speed_Lane_1",
+                     "Total_Flow_Lane_1","Occupancy_Lane_1","Average_Headway_Lane_1",
+                     "Average_Speed_Lane_2","Total_Flow_Lane_2","Occupancy_Lane_2",
+                     "Average_Headway_Lane_2","Average_Speed_Lane_3","Total_Flow_Lane_3",
+                     "Occupancy_Lane_3","Average_Headway_Lane_3","Average_Speed_Lane_4",
+                     "Total_Flow_Lane_4","Occupancy_Lane_4","Average_Headway_Lane_4",
+                     "Average_Speed_Lane_5","Total_Flow_Lane_5","Occupancy_Lane_5",
+                     "Average_Headway_Lane_5","Datetime",
+                     "After","Before", "X", "Y")
+
 # Random Forest Model build
 
 table(halo_spatial$After)
@@ -10,19 +24,32 @@ table(is.na(halo_spatial$After))
 
 halo_spatial = halo_spatial[is.na(halo_spatial$Datetime) == FALSE, ]
 
+# Run Average Column Code in 008
+
+# Remove all rows with 0 for all averages.
+nrow(halo_spatial[halo_spatial$AveSpeed == 0 & halo_spatial$AveOccupancy == 0 & halo_spatial$AveHeadway == 0 & halo_spatial$TotalFlow == 0, ])
+
+halo_spatial = halo_spatial[!(halo_spatial$AveSpeed == 0 & halo_spatial$AveOccupancy == 0 & halo_spatial$AveHeadway == 0 & halo_spatial$TotalFlow == 0), ]
+
+
 # Identify any Troublesome NAs
 
 sapply(halo_spatial, function(x) sum(is.na(x)))
 
 # After Data, 3 lanes and After Column
 
-variables = c("AveSpeed", "AveOccupancy", "AveHeadway", "AveTotalFlow")
+variables = c("AveSpeed", "AveOccupancy", "AveHeadway", "TotalFlow")
 
 outputs = c("Before", "After")
 
 mydata = halo_spatial
 mydata = as.data.frame(mydata)
+mydata$After = as.factor(mydata$After)
+mydata$Before = as.factor(mydata$Before)
 
+validation  = mydata[month(mydata$Datetime) == 12, ]
+mydata = mydata[month(mydata$Datetime) != 12, ]
+other = mydata[mydata$Before != 1 & mydata$After != 1, ]
 mydata = mydata[mydata$Before == 1 | mydata$After == 1, ]
 
 coor = st_coordinates(mydata$geometry)
@@ -49,23 +76,49 @@ colnames(mydata) = c("Control_Office","Geographic_Address","Year",
 
 idx = sample(nrow(mydata), 2750000) # Greater than Half of sample
 
-idx = sample(nrow(mydata), 70000) 
-mydata$After = as.factor(mydata$After)
-mydata$Before = as.factor(mydata$Before)
-
-
-train_data = mydata[idx, ]
-table(train_data$After)
-
-test_data = mydata[-idx, ]
+winner_train_a = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_test_a = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_validation_a = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_train_b = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_test_b = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_validation_b = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
 
 start_time <- Sys.time()
 
-formulas = rep(NA, length(variables))
+
+for (iteration in 1:20) {
+
+idx = sample(nrow(mydata), 70000)
+random_train = sample(nrow(other), 100000)
+other2 = other[-random_train, ]
+random_test = sample(nrow(other2), 100000)
+
+train_data = mydata[idx, ]
+train_extra = other[random_train, ]
+train_data = rbind(train_data, train_extra)
+table(train_data$After)
+
+test_data = mydata[-idx, ]
+test_extra = other2[random_test, ]
+test_data = rbind(test_data, test_extra)
+table(test_data$After)
+
+formulas_after = rep(NA, length(variables))
+formulas_before = rep(NA, length(variables))
 for (a in 1:length(variables)){
-formulas[a] = paste("After ~", variables[a])
+formulas_after[a] = paste("After ~", variables[a])
+formulas_before[a] = paste("Before ~", variables[a])
 }
-for (i in 1:length(formulas)){
+best_train_a = 0
+best_test_a = 0
+best_validation_a = 0
+
+best_train_b = 0
+best_test_b = 0
+best_validation_b = 0
+
+
+for (i in 1:length(formulas_after)){
   # Print Variable to identify loop location
   print(variables[i])
   # Random Forest Model
@@ -86,11 +139,13 @@ for (i in 1:length(formulas)){
   #   current_Forest = combine(current_Forest, next_Forest)
   # }
 
-  current_Forest = randomForest(formula = as.formula(formulas[i]), data = train_data, ntree = 500)
+  current_Forest_after = randomForest(formula = as.formula(formulas_after[i]), data = train_data, ntree = 500)
+  current_Forest_before = randomForest(formula = as.formula(formulas_before[i]), data = train_data, ntree = 500)
   
-  current_Forest = randomForest(formula = After ~ AveSpeed + AveOccupancy, data = train_data, ntree = 500)
+  
+  #current_Forest = randomForest(formula = After ~ AveSpeed + AveOccupancy, data = train_data, ntree = 500)
 
-  names(train_data)
+  #names(train_data)
   # for (k in 1:24) {
   #   next_Forest = randomForest(formula = as.formula(formulas), data = train_data, ntree = 20)
   #   current_Forest = combine(current_Forest, next_Forest)
@@ -98,9 +153,13 @@ for (i in 1:length(formulas)){
 
   
   # Predict Probability using model based on Test Data
-  pred = predict(current_Forest, newdata=train_data, type = "response")
-  pred_test = predict(current_Forest, newdata=test_data, type = "response")
-  pred_scale = predict(current_Forest, newdata=halo_spatial, type = "response")
+  pred_a = predict(current_Forest_after, newdata=train_data, type = "response")
+  pred_test_a = predict(current_Forest_after, newdata=test_data, type = "response")
+  pred_scale_a = predict(current_Forest_after, newdata=validation, type = "response")
+  
+  pred_b = predict(current_Forest_before, newdata=train_data, type = "response")
+  pred_test_b = predict(current_Forest_before, newdata=test_data, type = "response")
+  pred_scale_b = predict(current_Forest_before, newdata=validation, type = "response")
   #pred = predict(current_Forest, newdata=test_data, type = "response")
   #end_time <- Sys.time()
   
@@ -124,7 +183,9 @@ for (i in 1:length(formulas)){
   # print(cm)
   # print("---------------------")
   
-  cm = table(train_data$After, pred)
+  # After
+  
+  cm = table(train_data$After, pred_a)
   print("Confusion Matrix Train")
   print(cm)
   Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
@@ -136,8 +197,12 @@ for (i in 1:length(formulas)){
   print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
   print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
   print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+  print(confusionMatrix(pred_a, train_data$After)$byClass[11])
+  result = confusionMatrix(pred_a, train_data$After)$byClass[11]
+  if (result > best_train_a[2]) {best_train_a = c(Sensitivity,result, formulas_after[i])} 
   print("---------------------")
-  cm = table(test_data$After, pred_test)
+  
+  cm = table(test_data$After, pred_test_a)
   print("Confusion Matrix Test")
   print(cm)
   Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
@@ -149,8 +214,13 @@ for (i in 1:length(formulas)){
   print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
   print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
   print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+  print(confusionMatrix(pred_test_a, test_data$After)$byClass[11])
+  result = confusionMatrix(pred_test_a, test_data$After)$byClass[11]
+  if (result > best_test_a[2]) {best_test_a = c(Sensitivity,result, formulas_after[i])}
+  
   print("---------------------")
-  cm = table(halo_spatial$After, pred_scale)
+  
+  cm = table(validation$After, pred_scale_a)
   print("Confusion Matrix Scale")
   print(cm)
   Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
@@ -162,13 +232,105 @@ for (i in 1:length(formulas)){
   print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
   print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
   print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+  print(confusionMatrix(pred_scale_a, validation$After)$byClass[11])
+  result = confusionMatrix(pred_scale_a, validation$After)$byClass[11]
+  if (result > best_validation_a[2]) {best_validation_a = c(Sensitivity,result, formulas_after[i])}
+  
   print("---------------------")
+  
+  # Before 
+  
+  cm = table(train_data$After, pred_b)
+  print("Confusion Matrix Train")
+  print(cm)
+  Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+  Specificity = cm[1,1]/sum(cm[1,])
+  Sensitivity = cm[2,2]/sum(cm[2,])
+  Precision = cm[2,2]/sum(cm[,2])
+  
+  print(paste("Accuracy:", Accuracy)) # How right is it
+  print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+  print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+  print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+  print(confusionMatrix(pred_b, train_data$After)$byClass[11])
+  result = confusionMatrix(pred_b, train_data$After)$byClass[11]
+  if (result > best_train_b[2]) {best_train_b = c(Sensitivity,result, formulas_before[i])} 
+  print("---------------------")
+  
+  cm = table(test_data$After, pred_test_b)
+  print("Confusion Matrix Test")
+  print(cm)
+  Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+  Specificity = cm[1,1]/sum(cm[1,])
+  Sensitivity = cm[2,2]/sum(cm[2,])
+  Precision = cm[2,2]/sum(cm[,2])
+  
+  print(paste("Accuracy:", Accuracy)) # How right is it
+  print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+  print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+  print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+  print(confusionMatrix(pred_test_b, test_data$After)$byClass[11])
+  result = confusionMatrix(pred_test_b, test_data$After)$byClass[11]
+  if (result > best_test_b[2]) {best_test_b = c(Sensitivity,result, formulas_before[i])}
+  
+  print("---------------------")
+  
+  cm = table(validation$After, pred_scale_b)
+  print("Confusion Matrix Scale")
+  print(cm)
+  Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+  Specificity = cm[1,1]/sum(cm[1,])
+  Sensitivity = cm[2,2]/sum(cm[2,])
+  Precision = cm[2,2]/sum(cm[,2])
+  
+  print(paste("Accuracy:", Accuracy)) # How right is it
+  print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+  print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+  print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+  print(confusionMatrix(pred_scale_b, validation$After)$byClass[11])
+  result = confusionMatrix(pred_scale_b, validation$After)$byClass[11]
+  if (result > best_validation_b[2]) {best_validation_b = c(Sensitivity,result, formulas_before[i])}
+  
+  print("---------------------")
+
+}
+
+print(paste("Best After Train: ",best_train_a))
+print(paste("Best After Test: ",best_test_a))
+print(paste("Best After Scaled Validation: ",best_validation_a))
+
+winner_train_a[iteration,1] = best_train_a[1]
+winner_train_a[iteration,2] = best_train_a[2]
+winner_train_a[iteration,3] = best_train_a[3]
+
+winner_test_a[iteration,1] = best_test_a[1]
+winner_test_a[iteration,2] = best_test_a[2]
+winner_test_a[iteration,3] = best_test_a[3]
+
+winner_validation_a[iteration,1] = best_validation_a[1]
+winner_validation_a[iteration,2] = best_validation_a[2]
+winner_validation_a[iteration,3] = best_validation_a[3]
+
+
+winner_train_b[iteration,1] = best_train_b[1]
+winner_train_b[iteration,2] = best_train_b[2]
+winner_train_b[iteration,3] = best_train_b[3]
+
+winner_test_b[iteration,1] = best_test_b[1]
+winner_test_b[iteration,2] = best_test_b[2]
+winner_test_b[iteration,3] = best_test_b[3]
+
+winner_validation_b[iteration,1] = best_validation_b[1]
+winner_validation_b[iteration,2] = best_validation_b[2]
+winner_validation_b[iteration,3] = best_validation_b[3]
 
 }
 
 end_time <- Sys.time()
   
 end_time - start_time
+
+wtra = hist(winner_train_a[2], bins )
 
 
 mydata = halo_spatial
@@ -178,18 +340,22 @@ nrow(mydata)/ 2
 
 # Plots of Relationships
 
-ggplot(data = halo_spatial, aes(AveSpeed, AveOccupancy), colour = After) + geom_point()
+C = ggplot(data = halo_spatial, aes(AveSpeed, AveOccupancy), colour = After) + geom_point()
 
 After = halo_spatial[halo_spatial$After == 1, ]
 
 Before = halo_spatial[halo_spatial$Before == 1, ]
 
 
-pl = ggplot(data = After, aes(AveSpeed, AveOccupancy), colour = After) + geom_point()
+A = ggplot(data = After, aes(AveSpeed, AveOccupancy)) + geom_point()
+B = ggplot(data = Before, aes(AveSpeed, AveOccupancy)) + geom_point()
 
 
-After[After$AveSpeed == 0, ] = NA
-After[After$AveOccupancy == 0, ] = NA
+grid.arrange(A, B, C, nrow = 1, ncol = 3, top = "Ave Occupancy Vs Speed Within Hour of Major Crash")
+
+
+After[After$AveSpeed == 0 & After$AveOccupancy == 0 & After$AveHeadway == 0, ] = NA
+
 AveDens = table(cut(After$AveSpeed, 50), cut(After$AveOccupancy,50))
 image2D(z = AveDens, border = "black")
 AveDens = table(cut(After$AveSpeed, 50), cut(After$AveHeadway,50))
@@ -204,14 +370,20 @@ image2D(z = AveDens, border = "black")
 AveDens = table(cut(all$AveSpeed, 50), cut(all$AveHeadway,50))
 image2D(z = AveDens, border = "black")
 
+ggplot(data = halo_spatial, aes(AveSpeed, AveHeadway), col = After) + geom_point()
+ggplot(data = halo_spatial, aes(AveSpeed, AveOccupancy), col = After) + geom_point()
 
 
-Before[Before$AveSpeed == 0, ] = NA
+
+
+
+
+Before[Before$AveSpeed == 0 & Before$AveOccupancy == 0 & Before$AveHeadway == 0, ] = NA
 AveDens = table(cut(Before$AveSpeed, 50), cut(Before$AveOccupancy,50))
 image2D(z = AveDens, border = "black")
 AveDens = table(cut(Before$AveSpeed, 50), cut(Before$AveHeadway,50))
 image2D(z = AveDens, border = "black")
-AveDens = table(cut(Before$AveSpeed, 50), cut(Before$AveTotalFlow,50))
+AveDens = table(cut(Before$AveSpeed, 50), cut(Before$TotalFlow,50))
 image2D(z = AveDens, border = "black")
 
 # Ave Speed
@@ -306,3 +478,8 @@ ggplot(df, aes(x=count,group=year,fill=as.factor(year))) +
 # length(which(test_data$After == 1))
 # 
 # head(prediction)
+
+Occupancy_Request = halo_spatial[halo_spatial$AveOccupancy > 100, 1:34]
+nrow(Occupancy_Request)
+
+write.csv(Occupancy_Request, file = "D:/Documents/5872M-Dissertation/Data/Geometries/Occupancy_Over_100.csv",row.names=FALSE)

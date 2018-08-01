@@ -71,8 +71,10 @@ output$geometry = NULL
 
 write.csv(output, file = "D:/Documents/5872M-Dissertation/Data/Geometries/Halogen_2016_With_After_Before_15mins.csv",row.names=FALSE)
 
+# Calculate Averages
+
 Speed = data.frame(Ave1 = halo_spatial$Average_Speed_Lane_1, Ave2 = halo_spatial$Average_Speed_Lane_2, Ave3 = halo_spatial$Average_Speed_Lane_3, Ave4 = halo_spatial$Average_Speed_Lane_4, Ave5 = halo_spatial$Average_Speed_Lane_5)
-Occupancy = data.frame(Ave1 = halo_spatial$Occupancy_Lane_1, Ave2 = halo_spatial$Occupancy_Lane_2, Ave3 = halo_spatial$Average_Speed_Lane_3, Ave4 = halo_spatial$Average_Speed_Lane_4, Ave5 = halo_spatial$Average_Speed_Lane_5)
+Occupancy = data.frame(Ave1 = halo_spatial$Occupancy_Lane_1, Ave2 = halo_spatial$Occupancy_Lane_2, Ave3 = halo_spatial$Occupancy_Lane_3, Ave4 = halo_spatial$Occupancy_Lane_4, Ave5 = halo_spatial$Occupancy_Lane_5)
 Headway = data.frame(Ave1 = halo_spatial$Average_Headway_Lane_1, Ave2 = halo_spatial$Average_Headway_Lane_2, Ave3 = halo_spatial$Average_Headway_Lane_3, Ave4 = halo_spatial$Average_Headway_Lane_4, Ave5 = halo_spatial$Average_Headway_Lane_5)
 TotalFlow = data.frame(Ave1 = halo_spatial$Total_Flow_Lane_1, Ave2 = halo_spatial$Total_Flow_Lane_2, Ave3 = halo_spatial$Total_Flow_Lane_3, Ave4 = halo_spatial$Total_Flow_Lane_4, Ave5 = halo_spatial$Total_Flow_Lane_5)
 
@@ -102,9 +104,9 @@ TotalFlow[TotalFlow$Ave4 == 255,] = 0
 TotalFlow[TotalFlow$Ave5 == 255,] = 0
 
 
-myrowmean <- function(x) {
-  zero <- x==0
-  if (all(zero)) 0 else mean(x[!zero])
+myrowmean = function(x) {
+  zero = x == 0
+  if (all(zero)) {0} else {mean(x[!zero])}
 }
 
 AveSpeed = as.data.frame(apply(Speed,1,myrowmean))
@@ -116,50 +118,62 @@ colnames(AveOccupancy) = c("AveOccupancy")
 AveHeadway = as.data.frame(apply(Headway,1,myrowmean))
 colnames(AveHeadway) = c("AveHeadway")
 
-AveTotalFlow = as.data.frame(apply(TotalFlow,1,myrowmean))
-colnames(AveTotalFlow) = c("AveTotalFlow")
+TotalFlow = as.data.frame(apply(TotalFlow,1,sum))
+colnames(TotalFlow) = c("TotalFlow")
 
 halo_spatial$AveSpeed = AveSpeed$AveSpeed
 halo_spatial$AveOccupancy = AveOccupancy$AveOccupancy
 halo_spatial$AveHeadway = AveHeadway$AveHeadway
-halo_spatial$AveTotalFlow = AveTotalFlow$AveTotalFlow
+halo_spatial$TotalFlow = TotalFlow$TotalFlow
+
+# Remove Missing
+
+nrow(halo_spatial[halo_spatial$AveSpeed == 0 & halo_spatial$AveOccupancy == 0 & halo_spatial$AveHeadway == 0 & halo_spatial$TotalFlow == 0, ])
+
+halo_spatial = halo_spatial[!(halo_spatial$AveSpeed == 0 & halo_spatial$AveOccupancy == 0 & halo_spatial$AveHeadway == 0 & halo_spatial$TotalFlow == 0), ]
+
+
+hist(halo_spatial$TotalFlow, breaks = max(halo_spatial$TotalFlow))
+hist(halo_spatial$TotalFlow[halo_spatial$Before == 1], breaks = max(halo_spatial$TotalFlow))
+hist(halo_spatial$TotalFlow[halo_spatial$After == 1], breaks = max(halo_spatial$TotalFlow))
+
 
 
 
 no_0_Speed = halo_spatial[halo_spatial$AveSpeed != 0, ]
 no_0_Occupancy = halo_spatial[halo_spatial$AveOccupancy != 0, ]
 no_0_Headway = halo_spatial[halo_spatial$AveHeadway != 0, ]
-no_0_TotalFlow = halo_spatial[halo_spatial$AveTotalFlow != 0, ]
+no_0_TotalFlow = halo_spatial[halo_spatial$TotalFlow != 0, ]
 
 
 table(no_0$After)
 
 # Violins of results After
 
-pl1 = ggplot(no_0_Speed, aes(factor(After), AveSpeed)) + 
+pl1 = ggplot(halo_spatial, aes(factor(After), AveSpeed)) + 
   geom_violin(aes(fill = factor(After)), draw_quantiles = c(0.25, 0.5, 0.75))
 
-pl2 = ggplot(no_0_Occupancy, aes(factor(After), AveOccupancy)) + 
+pl2 = ggplot(halo_spatial, aes(factor(After), AveOccupancy)) + 
   geom_violin(aes(fill = factor(After)), draw_quantiles = c(0.25, 0.5, 0.75))
 
-pl3 = ggplot(no_0_Headway, aes(factor(After), AveHeadway)) + 
-  geom_violin(aes(fill = factor(After)), draw_quantiles = c(0.25, 0.5, 0.75))
+pl3 = ggplot(halo_spatial, aes(factor(After), AveHeadway)) + 
+  geom_violin(aes(fill = factor(After)))
 
-pl4 = ggplot(no_0_TotalFlow, aes(factor(After), AveTotalFlow)) + 
+pl4 = ggplot(halo_spatial, aes(factor(After), TotalFlow)) + 
   geom_violin(aes(fill = factor(After)), draw_quantiles = c(0.25, 0.5, 0.75))
 
 # Violins of results Before
 
-pl5 = ggplot(no_0_Speed, aes(factor(Before), AveSpeed)) + 
+pl5 = ggplot(halo_spatial, aes(factor(Before), AveSpeed)) + 
   geom_violin(aes(fill = factor(Before)), draw_quantiles = c(0.25, 0.5, 0.75))
 
-pl6 = ggplot(no_0_Occupancy, aes(factor(Before), AveOccupancy)) + 
+pl6 = ggplot(halo_spatial, aes(factor(Before), AveOccupancy)) + 
   geom_violin(aes(fill = factor(Before)), draw_quantiles = c(0.25, 0.5, 0.75))
 
-pl7 = ggplot(no_0_Headway, aes(factor(Before), AveHeadway)) + 
-  geom_violin(aes(fill = factor(Before)), draw_quantiles = c(0.25, 0.5, 0.75))
+pl7 = ggplot(halo_spatial, aes(factor(Before), AveHeadway)) + 
+  geom_violin(aes(fill = factor(Before)))
 
-pl8 = ggplot(no_0_TotalFlow, aes(factor(Before), AveTotalFlow)) + 
+pl8 = ggplot(halo_spatial, aes(factor(Before), TotalFlow)) + 
   geom_violin(aes(fill = factor(Before)), draw_quantiles = c(0.25, 0.5, 0.75))
 
 grid.arrange(pl1, pl2, pl3, pl4,pl5, pl6, pl7, pl8, nrow = 2, ncol = 4, top = "Density of Data Points")

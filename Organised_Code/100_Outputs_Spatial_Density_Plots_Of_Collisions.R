@@ -26,6 +26,7 @@ stat19 = output[output$Accident_Severity %in% c(1,2),]
 stat19 = outside_stat19
 
 o = owin(xrange = range(stat19$Location_Easting_OSGR), range(stat19$Location_Northing_OSGR))
+# o = owin(xrange = c(0,700000), c(0,700000))
 ac_pp = spatstat::ppp(x = stat19$Location_Easting_OSGR, y = stat19$Location_Northing_OSGR, window = o)
 Dens <- density(ac_pp, adjust = 0.05, diggle = TRUE, at="pixels", kernel = "gaussian")  # create density object Info: https://www.rdocumentation.org/packages/spatstat/versions/1.56-0/topics/density.ppp
 
@@ -51,3 +52,11 @@ plot(Dens, main="Severe and Fatal Collisions Within 2km of a Traffic Count Site"
 plot(Dens, main="Collisions Farther than 2km from a Traffic Count Site") # Number of points per pixel area
 
 dim(Dens)
+
+AveDens = table(cut(stat19$Location_Easting_OSGR, 50), cut(stat19$Location_Northing_OSGR,50))
+image2D(z = AveDens, main="All Collisions Within 2km of a Traffic Count Site") + plot()
+image2D(z = AveDens, main="Severe Collisions Within 2km of a Traffic Count Site")
+image2D(z = AveDens, main="Fatal Collisions Within 2km of a Traffic Count Site")
+image2D(z = AveDens, main="Severe and Fatal Collisions Within 2km of a Traffic Count Site")
+image2D(z = AveDens, main="Collisions Farther than 2km from a Traffic Count Site")
+
