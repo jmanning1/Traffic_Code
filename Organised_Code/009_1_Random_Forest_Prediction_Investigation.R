@@ -109,13 +109,13 @@ for (a in 1:length(variables)){
 formulas_after[a] = paste("After ~", variables[a])
 formulas_before[a] = paste("Before ~", variables[a])
 }
-best_train_a = 0
-best_test_a = 0
-best_validation_a = 0
+best_train_a = c(0,0,"")
+best_test_a = c(0,0,"")
+best_validation_a = c(0,0,"")
 
-best_train_b = 0
-best_test_b = 0
-best_validation_b = 0
+best_train_b = c(0,0,"")
+best_test_b = c(0,0,"")
+best_validation_b = c(0,0,"")
 
 
 for (i in 1:length(formulas_after)){
@@ -330,8 +330,529 @@ end_time <- Sys.time()
   
 end_time - start_time
 
-wtra = hist(winner_train_a[2], bins )
+write.csv(winner_train_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/train_after_1VAR.csv",row.names=FALSE)
+write.csv(winner_test_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/test_after_1VAR.csv",row.names=FALSE)
+write.csv(winner_validation_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/scale_after_1VAR.csv",row.names=FALSE)
+write.csv(winner_train_b, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/train_before_1VAR.csv",row.names=FALSE)
+write.csv(winner_test_b, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/test_before_1VAR.csv",row.names=FALSE)
+write.csv(winner_validation_b, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/scale_before_1VAR.csv",row.names=FALSE)
 
+table(winner_train_a[3])
+
+table(winner_test_a[3])
+
+table(winner_validation_a[3])
+
+table(winner_train_b[3])
+
+table(winner_test_b[3])
+
+table(winner_validation_b[3])
+
+# 2nd Variable After ################################################################################################
+
+winner_train_a = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_test_a = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_validation_a = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_train_b = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_test_b = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_validation_b = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+
+variables = c("AveOccupancy", "AveHeadway", "TotalFlow")
+
+start_time <- Sys.time()
+
+for (iteration in 1:20) {
+  
+  idx = sample(nrow(mydata), 70000)
+  random_train = sample(nrow(other), 100000)
+  other2 = other[-random_train, ]
+  random_test = sample(nrow(other2), 100000)
+  
+  train_data = mydata[idx, ]
+  train_extra = other[random_train, ]
+  train_data = rbind(train_data, train_extra)
+  table(train_data$After)
+  
+  test_data = mydata[-idx, ]
+  test_extra = other2[random_test, ]
+  test_data = rbind(test_data, test_extra)
+  table(test_data$After)
+  
+  formulas_after = rep(NA, length(variables))
+
+  for (a in 1:length(variables)){
+    formulas_after[a] = paste("After ~ AveSpeed + ", variables[a])
+
+  }
+  best_train_a = c(0,0,"")
+  best_test_a = c(0,0,"")
+  best_validation_a = c(0,0,"")
+  
+  
+  for (i in 1:length(formulas_after)){
+    # Print Variable to identify loop location
+    print(variables[i])
+    
+    current_Forest_after = randomForest(formula = as.formula(formulas_after[i]), data = train_data, ntree = 500)
+    
+    # Predict Probability using model based on Test Data
+    pred_a = predict(current_Forest_after, newdata=train_data, type = "response")
+    pred_test_a = predict(current_Forest_after, newdata=test_data, type = "response")
+    pred_scale_a = predict(current_Forest_after, newdata=validation, type = "response")
+
+    # After
+    
+    cm = table(train_data$After, pred_a)
+    print("Confusion Matrix Train")
+    print(cm)
+    Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+    Specificity = cm[1,1]/sum(cm[1,])
+    Sensitivity = cm[2,2]/sum(cm[2,])
+    Precision = cm[2,2]/sum(cm[,2])
+    
+    print(paste("Accuracy:", Accuracy)) # How right is it
+    print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+    print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+    print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+    print(confusionMatrix(pred_a, train_data$After)$byClass[11])
+    result = confusionMatrix(pred_a, train_data$After)$byClass[11]
+    if (result > best_train_a[2]) {best_train_a = c(Sensitivity,result, formulas_after[i])} 
+    print("---------------------")
+    
+    cm = table(test_data$After, pred_test_a)
+    print("Confusion Matrix Test")
+    print(cm)
+    Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+    Specificity = cm[1,1]/sum(cm[1,])
+    Sensitivity = cm[2,2]/sum(cm[2,])
+    Precision = cm[2,2]/sum(cm[,2])
+    
+    print(paste("Accuracy:", Accuracy)) # How right is it
+    print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+    print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+    print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+    print(confusionMatrix(pred_test_a, test_data$After)$byClass[11])
+    result = confusionMatrix(pred_test_a, test_data$After)$byClass[11]
+    if (result > best_test_a[2]) {best_test_a = c(Sensitivity,result, formulas_after[i])}
+    
+    print("---------------------")
+    
+    cm = table(validation$After, pred_scale_a)
+    print("Confusion Matrix Scale")
+    print(cm)
+    Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+    Specificity = cm[1,1]/sum(cm[1,])
+    Sensitivity = cm[2,2]/sum(cm[2,])
+    Precision = cm[2,2]/sum(cm[,2])
+    
+    print(paste("Accuracy:", Accuracy)) # How right is it
+    print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+    print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+    print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+    print(confusionMatrix(pred_scale_a, validation$After)$byClass[11])
+    result = confusionMatrix(pred_scale_a, validation$After)$byClass[11]
+    if (result > best_validation_a[2]) {best_validation_a = c(Sensitivity,result, formulas_after[i])}
+    
+    print("---------------------")
+    
+  }
+  
+  print(paste("Best After Train: ",best_train_a))
+  print(paste("Best After Test: ",best_test_a))
+  print(paste("Best After Scaled Validation: ",best_validation_a))
+  
+  winner_train_a[iteration,1] = best_train_a[1]
+  winner_train_a[iteration,2] = best_train_a[2]
+  winner_train_a[iteration,3] = best_train_a[3]
+  
+  winner_test_a[iteration,1] = best_test_a[1]
+  winner_test_a[iteration,2] = best_test_a[2]
+  winner_test_a[iteration,3] = best_test_a[3]
+  
+  winner_validation_a[iteration,1] = best_validation_a[1]
+  winner_validation_a[iteration,2] = best_validation_a[2]
+  winner_validation_a[iteration,3] = best_validation_a[3]
+  
+}
+
+end_time <- Sys.time()
+
+end_time - start_time
+
+write.csv(winner_train_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/train_after_2VAR.csv",row.names=FALSE)
+write.csv(winner_test_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/test_after_2VAR.csv",row.names=FALSE)
+write.csv(winner_validation_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/scale_after_2VAR.csv",row.names=FALSE)
+
+
+# After 3rd Variable
+
+winner_train_a = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_test_a = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_validation_a = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_train_b = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_test_b = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_validation_b = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+
+
+formulas_after = c("After ~ AveSpeed + TotalFlow + AveOccupancy", "After ~ AveSpeed + TotalFlow + AveHeadway", "After ~ AveSpeed + AveOccupancy + AveHeadway")
+
+start_time <- Sys.time()
+
+for (iteration in 1:20) {
+  
+  idx = sample(nrow(mydata), 70000)
+  random_train = sample(nrow(other), 100000)
+  other2 = other[-random_train, ]
+  random_test = sample(nrow(other2), 100000)
+  
+  train_data = mydata[idx, ]
+  train_extra = other[random_train, ]
+  train_data = rbind(train_data, train_extra)
+  table(train_data$After)
+  
+  test_data = mydata[-idx, ]
+  test_extra = other2[random_test, ]
+  test_data = rbind(test_data, test_extra)
+  table(test_data$After)
+  
+  best_train_a = c(0,0,"")
+  best_test_a = c(0,0,"")
+  best_validation_a = c(0,0,"")
+  
+  
+  for (i in 1:length(formulas_after)){
+    # Print Variable to identify loop location
+    print(formulas_after[i])
+    
+    current_Forest_after = randomForest(formula = as.formula(formulas_after[i]), data = train_data, ntree = 500)
+    
+    # Predict Probability using model based on Test Data
+    pred_a = predict(current_Forest_after, newdata=train_data, type = "response")
+    pred_test_a = predict(current_Forest_after, newdata=test_data, type = "response")
+    pred_scale_a = predict(current_Forest_after, newdata=validation, type = "response")
+    
+    # After
+    
+    cm = table(train_data$After, pred_a)
+    print("Confusion Matrix Train")
+    print(cm)
+    Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+    Specificity = cm[1,1]/sum(cm[1,])
+    Sensitivity = cm[2,2]/sum(cm[2,])
+    Precision = cm[2,2]/sum(cm[,2])
+    
+    print(paste("Accuracy:", Accuracy)) # How right is it
+    print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+    print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+    print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+    print(confusionMatrix(pred_a, train_data$After)$byClass[11])
+    result = confusionMatrix(pred_a, train_data$After)$byClass[11]
+    if (result > best_train_a[2]) {best_train_a = c(Sensitivity,result, formulas_after[i])} 
+    print("---------------------")
+    
+    cm = table(test_data$After, pred_test_a)
+    print("Confusion Matrix Test")
+    print(cm)
+    Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+    Specificity = cm[1,1]/sum(cm[1,])
+    Sensitivity = cm[2,2]/sum(cm[2,])
+    Precision = cm[2,2]/sum(cm[,2])
+    
+    print(paste("Accuracy:", Accuracy)) # How right is it
+    print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+    print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+    print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+    print(confusionMatrix(pred_test_a, test_data$After)$byClass[11])
+    result = confusionMatrix(pred_test_a, test_data$After)$byClass[11]
+    if (result > best_test_a[2]) {best_test_a = c(Sensitivity,result, formulas_after[i])}
+    
+    print("---------------------")
+    
+    cm = table(validation$After, pred_scale_a)
+    print("Confusion Matrix Scale")
+    print(cm)
+    Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+    Specificity = cm[1,1]/sum(cm[1,])
+    Sensitivity = cm[2,2]/sum(cm[2,])
+    Precision = cm[2,2]/sum(cm[,2])
+    
+    print(paste("Accuracy:", Accuracy)) # How right is it
+    print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+    print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+    print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+    print(confusionMatrix(pred_scale_a, validation$After)$byClass[11])
+    result = confusionMatrix(pred_scale_a, validation$After)$byClass[11]
+    if (result > best_validation_a[2]) {best_validation_a = c(Sensitivity,result, formulas_after[i])}
+    
+    print("---------------------")
+    
+  }
+  
+  print(paste("Best After Train: ",best_train_a))
+  print(paste("Best After Test: ",best_test_a))
+  print(paste("Best After Scaled Validation: ",best_validation_a))
+  
+  winner_train_a[iteration,1] = best_train_a[1]
+  winner_train_a[iteration,2] = best_train_a[2]
+  winner_train_a[iteration,3] = best_train_a[3]
+  
+  winner_test_a[iteration,1] = best_test_a[1]
+  winner_test_a[iteration,2] = best_test_a[2]
+  winner_test_a[iteration,3] = best_test_a[3]
+  
+  winner_validation_a[iteration,1] = best_validation_a[1]
+  winner_validation_a[iteration,2] = best_validation_a[2]
+  winner_validation_a[iteration,3] = best_validation_a[3]
+  
+}
+
+end_time <- Sys.time()
+
+end_time - start_time
+
+write.csv(winner_train_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/train_after_3VAR.csv",row.names=FALSE)
+write.csv(winner_test_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/test_after_3VAR.csv",row.names=FALSE)
+write.csv(winner_validation_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/scale_after_3VAR.csv",row.names=FALSE)
+
+# After 4th Variable
+
+winner_train_a = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_test_a = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_validation_a = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_train_b = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_test_b = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+winner_validation_b = as.data.frame(matrix(ncol = 3, nrow = 20, dimnames = list(1:20,c("Sensitivity", "Balanced_Accuracy", "Winning_Formula"))))
+
+
+formulas_after = c("After ~ AveSpeed + TotalFlow + AveOccupancy + AveHeadway")
+i = 1
+start_time <- Sys.time()
+
+for (iteration in 1:20) {
+  
+  idx = sample(nrow(mydata), 70000)
+  random_train = sample(nrow(other), 100000)
+  other2 = other[-random_train, ]
+  random_test = sample(nrow(other2), 100000)
+  
+  train_data = mydata[idx, ]
+  train_extra = other[random_train, ]
+  train_data = rbind(train_data, train_extra)
+  table(train_data$After)
+  
+  test_data = mydata[-idx, ]
+  test_extra = other2[random_test, ]
+  test_data = rbind(test_data, test_extra)
+  table(test_data$After)
+  
+  best_train_a = c(0,0,"")
+  best_test_a = c(0,0,"")
+  best_validation_a = c(0,0,"")
+  
+  
+
+    # Print Variable to identify loop location
+    print(formulas_after[i])
+    
+    current_Forest_after = randomForest(formula = as.formula(formulas_after[i]), data = train_data, ntree = 500)
+    
+    # Predict Probability using model based on Test Data
+    pred_a = predict(current_Forest_after, newdata=train_data, type = "response")
+    pred_test_a = predict(current_Forest_after, newdata=test_data, type = "response")
+    pred_scale_a = predict(current_Forest_after, newdata=validation, type = "response")
+    
+    # After
+    
+    cm = table(train_data$After, pred_a)
+    print("Confusion Matrix Train")
+    print(cm)
+    Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+    Specificity = cm[1,1]/sum(cm[1,])
+    Sensitivity = cm[2,2]/sum(cm[2,])
+    Precision = cm[2,2]/sum(cm[,2])
+    
+    print(paste("Accuracy:", Accuracy)) # How right is it
+    print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+    print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+    print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+    print(confusionMatrix(pred_a, train_data$After)$byClass[11])
+    result = confusionMatrix(pred_a, train_data$After)$byClass[11]
+    if (result > best_train_a[2]) {best_train_a = c(Sensitivity,result, formulas_after[i])} 
+    print("---------------------")
+    
+    cm = table(test_data$After, pred_test_a)
+    print("Confusion Matrix Test")
+    print(cm)
+    Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+    Specificity = cm[1,1]/sum(cm[1,])
+    Sensitivity = cm[2,2]/sum(cm[2,])
+    Precision = cm[2,2]/sum(cm[,2])
+    
+    print(paste("Accuracy:", Accuracy)) # How right is it
+    print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+    print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+    print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+    print(confusionMatrix(pred_test_a, test_data$After)$byClass[11])
+    result = confusionMatrix(pred_test_a, test_data$After)$byClass[11]
+    if (result > best_test_a[2]) {best_test_a = c(Sensitivity,result, formulas_after[i])}
+    
+    print("---------------------")
+    
+    cm = table(validation$After, pred_scale_a)
+    print("Confusion Matrix Scale")
+    print(cm)
+    Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+    Specificity = cm[1,1]/sum(cm[1,])
+    Sensitivity = cm[2,2]/sum(cm[2,])
+    Precision = cm[2,2]/sum(cm[,2])
+    
+    print(paste("Accuracy:", Accuracy)) # How right is it
+    print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+    print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+    print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+    print(confusionMatrix(pred_scale_a, validation$After)$byClass[11])
+    result = confusionMatrix(pred_scale_a, validation$After)$byClass[11]
+    if (result > best_validation_a[2]) {best_validation_a = c(Sensitivity,result, formulas_after[i])}
+    
+    print("---------------------")
+    
+  
+  print(paste("Best After Train: ",best_train_a))
+  print(paste("Best After Test: ",best_test_a))
+  print(paste("Best After Scaled Validation: ",best_validation_a))
+  
+  winner_train_a[iteration,1] = best_train_a[1]
+  winner_train_a[iteration,2] = best_train_a[2]
+  winner_train_a[iteration,3] = best_train_a[3]
+  
+  winner_test_a[iteration,1] = best_test_a[1]
+  winner_test_a[iteration,2] = best_test_a[2]
+  winner_test_a[iteration,3] = best_test_a[3]
+  
+  winner_validation_a[iteration,1] = best_validation_a[1]
+  winner_validation_a[iteration,2] = best_validation_a[2]
+  winner_validation_a[iteration,3] = best_validation_a[3]
+  
+}
+
+end_time <- Sys.time()
+
+end_time - start_time
+
+write.csv(winner_train_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/train_after_4VAR.csv",row.names=FALSE)
+write.csv(winner_test_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/test_after_4VAR.csv",row.names=FALSE)
+write.csv(winner_validation_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/scale_after_4VAR.csv",row.names=FALSE)
+
+
+  # Before 2nd Variable ###############################################################################
+  
+  formulas_before = rep(NA, length(variables) +  length(variables))
+  for (a in 1:length(variables)){
+    formulas_before[a] = paste("Before ~ AveSpeed + ", variables[a])
+    variables = c("AveHeadway", "TotalFlow")
+    formulas_before[a+length(variables)] = paste("Before ~ AveOccupancy + ", variables[a])
+  }
+  formulas_before = formulas_before[-1]
+
+  best_train_b = c(0,0,"")
+  best_test_b = c(0,0,"")
+  best_validation_b = c(0,0,"")
+  
+  
+  for (i in 1:length(formulas_before)){
+    # Print Variable to identify loop location
+    print(formulas_before[i])
+    
+    current_Forest_before = randomForest(formula = as.formula(formulas_before[i]), data = train_data, ntree = 500)
+    
+    # Predict Probability using model based on Test Data
+    
+    pred_b = predict(current_Forest_before, newdata=train_data, type = "response")
+    pred_test_b = predict(current_Forest_before, newdata=test_data, type = "response")
+    pred_scale_b = predict(current_Forest_before, newdata=validation, type = "response")
+    
+    cm = table(train_data$After, pred_b)
+    print("Confusion Matrix Train")
+    print(cm)
+    Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+    Specificity = cm[1,1]/sum(cm[1,])
+    Sensitivity = cm[2,2]/sum(cm[2,])
+    Precision = cm[2,2]/sum(cm[,2])
+    
+    print(paste("Accuracy:", Accuracy)) # How right is it
+    print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+    print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+    print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+    print(confusionMatrix(pred_b, train_data$After)$byClass[11])
+    result = confusionMatrix(pred_b, train_data$After)$byClass[11]
+    if (result > best_train_b[2]) {best_train_b = c(Sensitivity,result, formulas_before[i])} 
+    print("---------------------")
+    
+    cm = table(test_data$After, pred_test_b)
+    print("Confusion Matrix Test")
+    print(cm)
+    Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+    Specificity = cm[1,1]/sum(cm[1,])
+    Sensitivity = cm[2,2]/sum(cm[2,])
+    Precision = cm[2,2]/sum(cm[,2])
+    
+    print(paste("Accuracy:", Accuracy)) # How right is it
+    print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+    print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+    print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+    print(confusionMatrix(pred_test_b, test_data$After)$byClass[11])
+    result = confusionMatrix(pred_test_b, test_data$After)$byClass[11]
+    if (result > best_test_b[2]) {best_test_b = c(Sensitivity,result, formulas_before[i])}
+    
+    print("---------------------")
+    
+    cm = table(validation$After, pred_scale_b)
+    print("Confusion Matrix Scale")
+    print(cm)
+    Accuracy = (cm[1,1]+ cm[2,2])/sum(cm)
+    Specificity = cm[1,1]/sum(cm[1,])
+    Sensitivity = cm[2,2]/sum(cm[2,])
+    Precision = cm[2,2]/sum(cm[,2])
+    
+    print(paste("Accuracy:", Accuracy)) # How right is it
+    print(paste("Specificity:", Specificity)) # When 0 how often does it predict 0
+    print(paste("Sensitivity:", Sensitivity)) # when 1 how often does it predict 1
+    print(paste("Precision:", Precision)) # when predicts 1 how often is it right
+    print(confusionMatrix(pred_scale_b, validation$After)$byClass[11])
+    result = confusionMatrix(pred_scale_b, validation$After)$byClass[11]
+    if (result > best_validation_b[2]) {best_validation_b = c(Sensitivity,result, formulas_before[i])}
+    
+    print("---------------------")
+    
+  }
+  
+  
+  winner_train_b[iteration,1] = best_train_b[1]
+  winner_train_b[iteration,2] = best_train_b[2]
+  winner_train_b[iteration,3] = best_train_b[3]
+  
+  winner_test_b[iteration,1] = best_test_b[1]
+  winner_test_b[iteration,2] = best_test_b[2]
+  winner_test_b[iteration,3] = best_test_b[3]
+  
+  winner_validation_b[iteration,1] = best_validation_b[1]
+  winner_validation_b[iteration,2] = best_validation_b[2]
+  winner_validation_b[iteration,3] = best_validation_b[3]
+  
+}
+
+end_time <- Sys.time()
+
+end_time - start_time
+
+write.csv(winner_train_b, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/train_before_2VAR.csv",row.names=FALSE)
+write.csv(winner_test_b, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/test_before_2VAR.csv",row.names=FALSE)
+write.csv(winner_validation_b, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/scale_before_2VAR.csv",row.names=FALSE)
+
+
+
+###########################################################################################
 
 mydata = halo_spatial
 geom = mydata$geometry

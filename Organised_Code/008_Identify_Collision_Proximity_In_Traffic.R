@@ -26,9 +26,9 @@ halo_spatial$Datetime = ymd_hms(as.character(as.POSIXct(paste(paste0(halo_spatia
 
 # Identify Intervals
 
-before_interval <- as.interval(900, halo_spatial$Datetime)
+before_interval <- as.interval(3600, halo_spatial$Datetime)
 # flip interval to get lower date first in the interval
-after_interval <- int_flip(as.interval(-900, halo_spatial$Datetime)) 
+after_interval <- int_flip(as.interval(-3600, halo_spatial$Datetime)) 
 
 # Time and Space 
 
