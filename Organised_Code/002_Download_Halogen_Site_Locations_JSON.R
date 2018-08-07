@@ -18,6 +18,16 @@ sites = sites$sites
 names(sites)
 colnames(sites) = c("Id", "Name", "Description", "Longitude", "Latitude", "Status")
 
+all_sts = st_as_sf(sites, coords = c("Longitude", "Latitude"), crs = 4326)
+all_sts = st_transform(all_sts, crs = 27700)
+nrow(all_sts)
+
+sts1 = tm_shape(uk, bbox = st_bbox(c(xmin = 150000, xmax = 650000, ymax = 600000, ymin = 0), crs = st_crs(27700))) +
+  tm_polygons(alpha = 0.1) +
+  tm_shape(all_sts) +
+  tm_dots() + 
+  tm_layout(title = "Original MIDAS Webris Sites", main.title.size = 10)
+
 # Identify and Highlight Duplicates
 
 dups_unique = sites$Description[duplicated(sites$Description)]

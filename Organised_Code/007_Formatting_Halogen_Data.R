@@ -11,7 +11,21 @@ stat19 = st_as_sf(stat19, coords = c("X", "Y"), crs = 27700)
 # Highest Accident Dates
 
 severe = c(1,2)
-data = as.data.frame(stat19[stat19$Accident_Severity %in% severe & stat19$Road_Type == 3  & stat19$Junction_Detail == 0, ])
+data = stat19[stat19$Accident_Severity %in% severe & stat19$Road_Type == 3  & stat19$Junction_Detail == 0, ]
+
+st_crs(data) = 27700
+
+af = tm_shape(uk, bbox = st_bbox(c(xmin = 150000, xmax = 650000, ymax = 600000, ymin = 0), crs = st_crs(27700))) +
+  tm_polygons(alpha = 0.1) +
+  tm_shape(data) +
+  tm_dots() + 
+  tm_layout(title = "Reduced Collisions \n by Accident Severity, \n Road Type and \n Junction Detail", main.title.size = 10)
+
+grid.newpage()
+pushViewport(viewport(layout=grid.layout(1,2)))
+print(ae, vp=viewport(layout.pos.col = 1))
+print(af, vp=viewport(layout.pos.col = 2))
+
 tab = as.data.frame(table(data$Date))
 tab = tab[order(-tab$Freq, decreasing = FALSE),] 
 

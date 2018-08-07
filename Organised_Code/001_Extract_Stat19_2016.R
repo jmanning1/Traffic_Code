@@ -105,13 +105,23 @@ format_stats19_ac_2016(ac)
 ac = ac[!is.na(ac$Longitude), ]                                                               
 ac_sf = st_as_sf(ac, coords = c("Longitude", "Latitude"), crs = 4326) 
 
+# Map
 
-map <- get_map(location = c(lon = -2.5, lat =  54.2), zoom = 6, maptype = "satellite")
+# UK Outline
 
-new_buffer = st_transform(new_buffer, crs = 4326)
+uk = rnaturalearth::ne_countries(scale = 50) %>% 
+  st_as_sf() %>% 
+  filter(grepl(pattern = "United Kingdom", x = name_long))
+uk = st_transform(uk, 27700)
+
+# Make BNG
+all_colls = st_transform(ac_sf, crs = 27700)
+
+aa = tm_shape(uk) +
+  tm_polygons(alpha = 0.1) +
+  tm_shape(all_colls) +
+  tm_dots() + 
+  tm_layout(title = "All Collisions \n STATS19", main.title.size = 10)
 
 
 
-ggmap(map) + 
-  geom_point(data = ac, aes(x = Longitude, y = Latitude, colour = "grey")) + 
-  geom_point(data = output, aes(x = X, y = Y, colour = "red")) 

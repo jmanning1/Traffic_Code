@@ -137,7 +137,25 @@ hist(halo_spatial$TotalFlow, breaks = max(halo_spatial$TotalFlow))
 hist(halo_spatial$TotalFlow[halo_spatial$Before == 1], breaks = max(halo_spatial$TotalFlow))
 hist(halo_spatial$TotalFlow[halo_spatial$After == 1], breaks = max(halo_spatial$TotalFlow))
 
+unique_sites = osgb_sites[osgb_sites$`Geographic Address` %in% unique(halo_spatial$Geographic_Address),]
 
+webs = tm_shape(uk, bbox = st_bbox(c(xmin = 150000, xmax = 650000, ymax = 600000, ymin = 0), crs = st_crs(27700))) +
+  tm_polygons(alpha = 0.1) +
+  tm_shape(osgb_sites) +
+  tm_dots() + 
+  tm_layout(title = "Potential Webtris Locations", main.title.size = 10)
+
+
+mids = tm_shape(uk, bbox = st_bbox(c(xmin = 150000, xmax = 650000, ymax = 600000, ymin = 0), crs = st_crs(27700))) +
+  tm_polygons(alpha = 0.1) + 
+  tm_shape(unique_sites) +
+  tm_dots() +
+  tm_layout(title = "MIDAS Gold Locations Near Collisions", main.title.size = 10)
+
+grid.newpage()
+pushViewport(viewport(layout=grid.layout(1,2)))
+print(webs, vp=viewport(layout.pos.col = 1))
+print(mids, vp=viewport(layout.pos.col = 2))
 
 
 no_0_Speed = halo_spatial[halo_spatial$AveSpeed != 0, ]

@@ -740,9 +740,6 @@ end_time <- Sys.time()
 
 end_time - start_time
 
-write.csv(winner_train_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/train_after_4VAR.csv",row.names=FALSE)
-write.csv(winner_test_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/test_after_4VAR.csv",row.names=FALSE)
-write.csv(winner_validation_a, file = "D:/Documents/5872M-Dissertation/Data/RandomForest/scale_after_4VAR.csv",row.names=FALSE)
 
 
   # Before 2nd Variable ###############################################################################
