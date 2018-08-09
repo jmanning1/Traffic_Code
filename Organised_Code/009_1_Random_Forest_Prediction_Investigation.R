@@ -22,6 +22,8 @@ table(halo_spatial$After)
 
 table(is.na(halo_spatial$After))
 
+datetime_issues = halo_spatial[is.na(halo_spatial$Datetime) == TRUE, ]
+
 halo_spatial = halo_spatial[is.na(halo_spatial$Datetime) == FALSE, ]
 
 # Run Average Column Code in 008

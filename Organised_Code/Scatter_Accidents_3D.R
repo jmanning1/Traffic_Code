@@ -95,9 +95,10 @@ plot(stat19_sev2$X, stat19_sev2$Y, col = stat19_sev2$cluster)
 raster_template = raster(extent(100000, 700000, 0, 750000), resolution = 10000,
                          crs = st_crs(27700)$proj4string)
 
+# All on NTIS Network - Collision Density
+
 col_raster1 = rasterize(on_network_colls, raster_template, 
                         field = 1, fun = "count")
-# All on NTIS Network - Collision Density
 
 all_km10 = tm_shape(col_raster1) +
   tm_raster(title = "", breaks = c(1,5,10,25,50,100,150,200,250,300)) +
@@ -153,5 +154,132 @@ pushViewport(viewport(layout=grid.layout(1,3)))
 print(all_km10, vp=viewport(layout.pos.col = 1))
 print(within_2km_km10, vp=viewport(layout.pos.col = 2))
 print(Farther_2km_km10, vp=viewport(layout.pos.col = 3))
+
+
+# All on NTIS Network - Broken Down by Severity
+
+slight_coll = on_network_colls[on_network_colls$Accident_Severity == 3,]
+severe_coll = on_network_colls[on_network_colls$Accident_Severity == 2,]
+fatal_coll = on_network_colls[on_network_colls$Accident_Severity == 1,]
+
+
+col_raster4 = rasterize(slight_coll, raster_template, 
+                        field = 1, fun = "count")
+
+slight_km10 = tm_shape(col_raster4) +
+  tm_raster(title = "", breaks = c(1,5,10,25,50,100,150,200,250)) +
+  tm_shape(uk, bbox = st_bbox(c(xmin = 100000, xmax = 700000, ymax = 750000, ymin = 0), crs = st_crs(27700))) +
+  tm_polygons(alpha = 0.1) +
+  tm_shape(osgb_roads) +
+  tm_lines(col = 'blue', alpha = 0.1) +
+  tm_layout(title = "Slight Collisions",
+            main.title.size = 10,
+            legend.title.size = 1,
+            legend.text.size = 0.8,
+            legend.position = c("right","top"),
+            legend.bg.color = "white",
+            legend.bg.alpha = 1)
+
+col_raster5 = rasterize(severe_coll, raster_template, 
+                        field = 1, fun = "count")
+
+
+severe_km10 = tm_shape(col_raster5) +
+  tm_raster(title = "", breaks = c(1,3,5,10,15,20,25,30,35)) +
+  tm_shape(uk, bbox = st_bbox(c(xmin = 100000, xmax = 700000, ymax = 750000, ymin = 0), crs = st_crs(27700))) +
+  tm_polygons(alpha = 0.1) +
+  tm_shape(osgb_roads) +
+  tm_lines(col = 'blue', alpha = 0.1) +
+  tm_layout(title = "Severe Collisions", 
+            main.title.size = 10,
+            legend.title.size = 1,
+            legend.text.size = 0.8,
+            legend.position = c("right","top"),
+            legend.bg.color = "white",
+            legend.bg.alpha = 1)
+
+col_raster6 = rasterize(fatal_coll, raster_template, 
+                        field = 1, fun = "count")
+
+fatal_km10 = tm_shape(col_raster6) +
+  tm_raster(title = "", breaks = c(1,2,3,4,5)) +
+  tm_shape(uk, bbox = st_bbox(c(xmin = 100000, xmax = 700000, ymax = 750000, ymin = 0), crs = st_crs(27700))) +
+  tm_polygons(alpha = 0.1) +
+  tm_shape(osgb_roads) +
+  tm_lines(col = 'blue', alpha = 0.1)  +
+  tm_layout(title = "Fatal Collisions", 
+            main.title.size = 10,
+            legend.title.size = 1,
+            legend.text.size = 0.8,
+            legend.position = c("right","top"),
+            legend.bg.color = "white",
+            legend.bg.alpha = 1)
+
+# Within 2km of Network - Broken Down by Severity
+
+slight_coll2 = ac_buffer[ac_buffer$Accident_Severity == 3,]
+severe_coll2 = ac_buffer[ac_buffer$Accident_Severity == 2,]
+fatal_coll2 = ac_buffer[ac_buffer$Accident_Severity == 1,]
+
+col_raster7 = rasterize(slight_coll2, raster_template, 
+                        field = 1, fun = "count")
+
+slight_km10_2km = tm_shape(col_raster7) +
+  tm_raster(title = "", breaks = c(1,5,10,25,50,100,150,200,250)) +
+  tm_shape(uk, bbox = st_bbox(c(xmin = 100000, xmax = 700000, ymax = 750000, ymin = 0), crs = st_crs(27700))) +
+  tm_polygons(alpha = 0.1) +
+  tm_shape(osgb_roads) +
+  tm_lines(col = 'blue', alpha = 0.1) +
+  tm_layout(title = "Slight Collisions",
+            main.title.size = 10,
+            legend.title.size = 1,
+            legend.text.size = 0.8,
+            legend.position = c("right","top"),
+            legend.bg.color = "white",
+            legend.bg.alpha = 1)
+
+col_raster8 = rasterize(severe_coll2, raster_template, 
+                        field = 1, fun = "count")
+
+
+severe_km10_2km = tm_shape(col_raster8) +
+  tm_raster(title = "", breaks = c(1,3,5,10,15,20,25,30,35)) +
+  tm_shape(uk, bbox = st_bbox(c(xmin = 100000, xmax = 700000, ymax = 750000, ymin = 0), crs = st_crs(27700))) +
+  tm_polygons(alpha = 0.1) +
+  tm_shape(osgb_roads) +
+  tm_lines(col = 'blue', alpha = 0.1) +
+  tm_layout(title = "Severe Collisions", 
+            main.title.size = 10,
+            legend.title.size = 1,
+            legend.text.size = 0.8,
+            legend.position = c("right","top"),
+            legend.bg.color = "white",
+            legend.bg.alpha = 1)
+
+col_raster9 = rasterize(fatal_coll2, raster_template, 
+                        field = 1, fun = "count")
+
+fatal_km10_2km = tm_shape(col_raster9) +
+  tm_raster(title = "", breaks = c(1,2,3,4,5)) +
+  tm_shape(uk, bbox = st_bbox(c(xmin = 100000, xmax = 700000, ymax = 750000, ymin = 0), crs = st_crs(27700))) +
+  tm_polygons(alpha = 0.1) +
+  tm_shape(osgb_roads) +
+  tm_lines(col = 'blue', alpha = 0.1)  +
+  tm_layout(title = "Fatal Collisions", 
+            main.title.size = 10,
+            legend.title.size = 1,
+            legend.text.size = 0.8,
+            legend.position = c("right","top"),
+            legend.bg.color = "white",
+            legend.bg.alpha = 1)
+
+grid.newpage()
+pushViewport(viewport(layout=grid.layout(nrow = 2, ncol = 3)))
+print(slight_km10, vp=viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(severe_km10, vp=viewport(layout.pos.row = 1, layout.pos.col = 2))
+print(fatal_km10, vp=viewport(layout.pos.row = 1, layout.pos.col = 3))
+print(slight_km10_2km, vp=viewport(layout.pos.row = 2, layout.pos.col = 1))
+print(severe_km10_2km, vp=viewport(layout.pos.row = 2, layout.pos.col = 2))
+print(fatal_km10_2km, vp=viewport(layout.pos.row = 2, layout.pos.col = 3))
 
 

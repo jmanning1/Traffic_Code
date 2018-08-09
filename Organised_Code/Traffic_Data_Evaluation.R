@@ -108,6 +108,38 @@ r = ggplot(mapping = aes(x = Time_GMT, y = TotalFlow)) +
 
 grid.arrange(g, o, r, nrow = 1, ncol = 3)
 
+## Webtris Locations not in MIDAS
+
+MIDAS = osgb_sites[osgb_sites$`Geographic Address` %in% unique(halo_spatial$Geographic_Address),]
+
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+No_MIDAS = osgb_sites[osgb_sites$`Geographic Address` %!in% unique(halo_spatial$Geographic_Address),]
+
+tm_shape(uk, bbox = st_bbox(c(xmin = 150000, xmax = 650000, ymax = 600000, ymin = 0), crs = st_crs(27700))) +
+  tm_polygons(alpha = 0.1) +
+  tm_shape(MIDAS) +
+  tm_dots(col = "blue", alpha = 1, size = 0.5) + 
+  tm_shape(No_MIDAS) +
+  tm_dots(col = "red", alpha = 1, siz = 0.5) +
+  tm_layout(title = "MIDAS Gold and WebTRIS Sites Inconsistency", main.title.size = 10)
+
+inconsis_report = as.data.frame(unique(No_MIDAS$`Geographic Address`))
+
+write.csv(inconsis_report, file = "D:/Documents/5872M-Dissertation/Data/Potential_Data_Issues/webTRIS_MIDAS_Gold_Inconsistency_Sites.csv", row.names=FALSE)
+
+
+Faulty_Sites = MIDAS[MIDAS$`Geographic Address` %in% unique(all_missing$Geographic_Address),]
+
+Working_Sites = MIDAS[MIDAS$`Geographic Address` %!in% unique(all_missing$Geographic_Address),]
+
+tm_shape(uk, bbox = st_bbox(c(xmin = 150000, xmax = 650000, ymax = 600000, ymin = 0), crs = st_crs(27700))) +
+  tm_polygons(alpha = 0.1) +
+  tm_shape(Working_Sites) +
+  tm_dots(col = "blue", alpha = 1, size = 0.5) + 
+  tm_shape(Faulty_Sites) +
+  tm_dots(col = "red", alpha = 1, siz = 0.5) +
+  tm_layout(title = "Potentially Faulty MIDAS Gold Sites", main.title.size = 10)
 
 # Generic Day
 

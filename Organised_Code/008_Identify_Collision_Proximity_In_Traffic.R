@@ -22,7 +22,19 @@ halo_spatial$Datetime = ymd_hms(as.character(as.POSIXct(paste(paste0(halo_spatia
 
 # If Time GMT missing seconds
 
-halo_spatial$Datetime = ymd_hms(as.character(as.POSIXct(paste(paste0(halo_spatial$Year, "-", halo_spatial$Month, "-", halo_spatial$Day),paste0(halo_spatial$`Time GMT`, ":00")), format="%Y-%b-%d %H:%M:%S")))
+# Creates 1080 NA Datetimes
+# halo_spatial$Datetime = ymd_hms(as.character(as.POSIXct(paste(paste0(halo_spatial$Year, "-", halo_spatial$Month, "-", halo_spatial$Day),paste0(halo_spatial$`Time GMT`, ":00")), format="%Y-%b-%d %H:%M:%S")))
+# datetime_fail = halo_spatial[is.na(halo_spatial$Datetime) == TRUE,]
+# write.csv(datetime_fail, file = "D:/Documents/5872M-Dissertation/Data/Potential_Data_Issues/DateTime_Fail.csv", row.names=FALSE)
+
+
+
+
+halo_spatial$Datetime = ymd_hms(paste(paste0(halo_spatial$Year,"-",halo_spatial$Month,"-",halo_spatial$Day),
+                                      paste0(halo_spatial$`Time GMT`, ":00")
+                                      )
+                                )
+
 
 # Identify Intervals
 
@@ -73,10 +85,29 @@ write.csv(output, file = "D:/Documents/5872M-Dissertation/Data/Geometries/Haloge
 
 # Calculate Averages
 
-Speed = data.frame(Ave1 = halo_spatial$Average_Speed_Lane_1, Ave2 = halo_spatial$Average_Speed_Lane_2, Ave3 = halo_spatial$Average_Speed_Lane_3, Ave4 = halo_spatial$Average_Speed_Lane_4, Ave5 = halo_spatial$Average_Speed_Lane_5)
-Occupancy = data.frame(Ave1 = halo_spatial$Occupancy_Lane_1, Ave2 = halo_spatial$Occupancy_Lane_2, Ave3 = halo_spatial$Occupancy_Lane_3, Ave4 = halo_spatial$Occupancy_Lane_4, Ave5 = halo_spatial$Occupancy_Lane_5)
-Headway = data.frame(Ave1 = halo_spatial$Average_Headway_Lane_1, Ave2 = halo_spatial$Average_Headway_Lane_2, Ave3 = halo_spatial$Average_Headway_Lane_3, Ave4 = halo_spatial$Average_Headway_Lane_4, Ave5 = halo_spatial$Average_Headway_Lane_5)
-TotalFlow = data.frame(Ave1 = halo_spatial$Total_Flow_Lane_1, Ave2 = halo_spatial$Total_Flow_Lane_2, Ave3 = halo_spatial$Total_Flow_Lane_3, Ave4 = halo_spatial$Total_Flow_Lane_4, Ave5 = halo_spatial$Total_Flow_Lane_5)
+Speed = data.frame(Ave1 = halo_spatial$Average_Speed_Lane_1,
+                   Ave2 = halo_spatial$Average_Speed_Lane_2,
+                   Ave3 = halo_spatial$Average_Speed_Lane_3,
+                   Ave4 = halo_spatial$Average_Speed_Lane_4,
+                   Ave5 = halo_spatial$Average_Speed_Lane_5)
+
+Occupancy = data.frame(Ave1 = halo_spatial$Occupancy_Lane_1,
+                       Ave2 = halo_spatial$Occupancy_Lane_2,
+                       Ave3 = halo_spatial$Occupancy_Lane_3,
+                       Ave4 = halo_spatial$Occupancy_Lane_4,
+                       Ave5 = halo_spatial$Occupancy_Lane_5)
+
+Headway = data.frame(Ave1 = halo_spatial$Average_Headway_Lane_1,
+                     Ave2 = halo_spatial$Average_Headway_Lane_2,
+                     Ave3 = halo_spatial$Average_Headway_Lane_3,
+                     Ave4 = halo_spatial$Average_Headway_Lane_4,
+                     Ave5 = halo_spatial$Average_Headway_Lane_5)
+
+TotalFlow = data.frame(Ave1 = halo_spatial$Total_Flow_Lane_1,
+                       Ave2 = halo_spatial$Total_Flow_Lane_2,
+                       Ave3 = halo_spatial$Total_Flow_Lane_3,
+                       Ave4 = halo_spatial$Total_Flow_Lane_4,
+                       Ave5 = halo_spatial$Total_Flow_Lane_5)
 
 
 Speed[Speed$Ave1 == 255,] = 0
@@ -129,6 +160,15 @@ halo_spatial$TotalFlow = TotalFlow$TotalFlow
 # Remove Missing
 
 nrow(halo_spatial[halo_spatial$AveSpeed == 0 & halo_spatial$AveOccupancy == 0 & halo_spatial$AveHeadway == 0 & halo_spatial$TotalFlow == 0, ])
+
+Missing = halo_spatial[halo_spatial$AveSpeed == 0 & halo_spatial$AveOccupancy == 0 & halo_spatial$AveHeadway == 0 & halo_spatial$TotalFlow == 0, ]
+
+all_missing = Missing[Missing$Geographic_Address %!in% unique(halo_spatial$Geographic_Address),]
+
+missing_report = as.data.frame(unique(all_missing$Geographic_Address))
+
+write.csv(missing_report, file = "D:/Documents/5872M-Dissertation/Data/Potential_Data_Issues/Potentially_Faulty_Sites.csv", row.names=FALSE)
+
 
 halo_spatial = halo_spatial[!(halo_spatial$AveSpeed == 0 & halo_spatial$AveOccupancy == 0 & halo_spatial$AveHeadway == 0 & halo_spatial$TotalFlow == 0), ]
 
