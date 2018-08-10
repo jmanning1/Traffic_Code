@@ -37,6 +37,26 @@ stat19_date = stat19[stat19$Date == "2016-01-28" & stat19$Accident_Severity %in%
 stat19_date = st_as_sf(stat19_date, coords = c("X", "Y"), crs = 27700)
 
 
+# Logistic Graph
+
+logisitic = function(x) 1/(1+exp(-x))
+X = seq(-20, 20, length.out = 100)
+Y = logisitic(X)
+plot(X, Y, xlab="Time", ylab="", xaxt='n', yaxt= 'n', cex.lab=2, cex.main=2, main = "Has a Collision Occurred?") + 
+  lines(X,Y) + 
+  axis(side = 2, at = c(0,1), labels = c("False", "True"), cex.axis=2)
+
+# Reason for Random Forests
+
+coll_sim = function(x) {0+1*(x > 0.10 & x < 0.20 | x > 0.65 & x < 0.95)}
+X = seq(0,1, length.out=100)
+graph = coll_sim(X)
+Y = as.numeric(runif(100)<graph)
+
+plot(X,-Y, xlab="Time", ylab="", xaxt='n', yaxt= 'n', cex.lab=2, cex.main=2, main = "Has a Collision Occurred Recently and Is Traffic Impacted?") + 
+  lines(X,-Y) + 
+  axis(side = 2, at = c(0,-1), labels = c("False", "True"), cex.axis=2)
+
 
 # Accident Profile M1/2516B - Severity 2 - Downstream
 

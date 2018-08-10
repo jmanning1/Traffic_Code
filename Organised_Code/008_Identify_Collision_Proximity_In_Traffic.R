@@ -81,15 +81,34 @@ output = cbind(halo_spatial, coor)
 output$geometry = NULL
 
 
-write.csv(output, file = "D:/Documents/5872M-Dissertation/Data/Geometries/Halogen_2016_With_After_Before_15mins.csv",row.names=FALSE)
+write.csv(output, file = "D:/Documents/5872M-Dissertation/Data/Geometries/Halogen_2016_With_After_Before_1hr.csv",row.names=FALSE)
 
 # Calculate Averages
+
+backup = halo_spatial
+
+halo_spatial = output
+
+colnames(halo_spatial) = c("Control_Office","Geographic_Address","Year",
+                           "Month","Day","Day_of_Week",
+                           "Type_of_Day","Days_After_Nearest_Bank_Holiday","Time_GMT",
+                           "Number_of_Lanes","Flow_Category_1","Flow_Category_2",
+                           "Flow_Category_3","Flow_Category_4","Average_Speed_Lane_1",
+                           "Total_Flow_Lane_1","Occupancy_Lane_1","Average_Headway_Lane_1",
+                           "Average_Speed_Lane_2","Total_Flow_Lane_2","Occupancy_Lane_2",
+                           "Average_Headway_Lane_2","Average_Speed_Lane_3","Total_Flow_Lane_3",
+                           "Occupancy_Lane_3","Average_Headway_Lane_3","Average_Speed_Lane_4",
+                           "Total_Flow_Lane_4","Occupancy_Lane_4","Average_Headway_Lane_4",
+                           "Average_Speed_Lane_5","Total_Flow_Lane_5","Occupancy_Lane_5",
+                           "Average_Headway_Lane_5","Datetime",
+                           "After","Before", "X", "Y")
 
 Speed = data.frame(Ave1 = halo_spatial$Average_Speed_Lane_1,
                    Ave2 = halo_spatial$Average_Speed_Lane_2,
                    Ave3 = halo_spatial$Average_Speed_Lane_3,
                    Ave4 = halo_spatial$Average_Speed_Lane_4,
                    Ave5 = halo_spatial$Average_Speed_Lane_5)
+
 
 Occupancy = data.frame(Ave1 = halo_spatial$Occupancy_Lane_1,
                        Ave2 = halo_spatial$Occupancy_Lane_2,
