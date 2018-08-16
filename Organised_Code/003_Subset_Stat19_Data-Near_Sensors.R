@@ -21,7 +21,7 @@
 
 # Load Cleaned Sites Data
 
-sites = readr::read_csv(file.path("D:/Documents/5872M-Dissertation/Data/Geometries/", "Site_Locations.csv"))
+sites = readr::read_csv(file.path("Data/Geometries/", "Site_Locations.csv"))
 
 
 # Make Spatial Geometry
@@ -51,7 +51,7 @@ buffer_sites = st_buffer(osgb_sites, 2000)
 
 # Load Roads
 
-roads_shape = st_read("D:/Documents/5872M-Dissertation/Data/Geometries/Roads/Links_nmv5_WP104_INRIX.shp")
+roads_shape = st_read("Data/Geometries/Roads/Links_nmv5_WP104_INRIX.shp")
 
 # Transform to British National Grid
 
@@ -156,7 +156,7 @@ colnames(output) = c("Accident_Index", "Location_Easting_OSGR", "Location_Northi
 
 # Print csv for 2km Limit from any traffic point.
 
-write.csv(output, file = "D:/Documents/5872M-Dissertation/Data/Geometries/Stat19_2016_2km_Subset.csv",row.names=FALSE)
+write.csv(output, file = "Data/Geometries/Stat19_2016_2km_Subset.csv",row.names=FALSE)
 
 
 # Histograms

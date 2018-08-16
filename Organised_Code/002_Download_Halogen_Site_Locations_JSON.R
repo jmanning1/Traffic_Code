@@ -33,7 +33,7 @@ sts1 = tm_shape(uk, bbox = st_bbox(c(xmin = 150000, xmax = 650000, ymax = 600000
 dups_unique = sites$Description[duplicated(sites$Description)]
 dups = sites[sites$Description %in% dups_unique,]
 
-write.csv(dups, file = "D:/Documents/5872M-Dissertation/Data/Geometries/dups.csv",row.names=FALSE)
+# write.csv(dups, file = "Data/Geometries/dups.csv",row.names=FALSE)
 
 # Format Column Names to Align with Halogen Data (Description -> Geographic Address)
 
@@ -59,5 +59,5 @@ sites = sites[grepl("^.+(A)$", sites$`Geographic Address`) | grepl("^.+(B)$", si
 
 # Output Site Locations
 
-write.csv(sites, file = "D:/Documents/5872M-Dissertation/Data/Geometries/Site_Locations.csv",row.names=FALSE)
+# write.csv(sites, file = "Data/Geometries/Site_Locations.csv",row.names=FALSE)
 
