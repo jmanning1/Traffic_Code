@@ -17,11 +17,13 @@
 # Code Adapted from https://hydroecology.net/downloading-lots-of-files-with-r/
 
 # Empties Destination Folder
-unlink("D:/Documents/5872M-Dissertation/Data/Original/Auto/*.tcd")
+unlink("Data/Original/Auto/*.tcd")
 
 CO = c("10", "20", "30", "40", "50", "60", "70", "79")
 year = c("2015", "2016", "2017", "2018")
+# year = "2016"
 month = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+# month = "Dec"
 
 # Secure Login
 un = readline("Type the username:")
@@ -55,7 +57,7 @@ for(a in seq(length(CO))){
     # To Download ###########################################
     
     # Set Output Directory
-    mydir = "D:/Documents/5872M-Dissertation/Data/Original/Auto/"
+    mydir = "Data/Original/Auto/"
     
     # Generate Full Urls
     fileurls = paste0(baseurl, urls)
@@ -72,4 +74,8 @@ for(a in seq(length(CO))){
                con = filepaths[i])
   }
 }
+
+# read these, e.g. with (failing):
+# sites = unique(osgb_sites$`Geographic Address`)
+# RoadData(startDate = "2016-12-01", endDate = "2016-12-30", tcdFileRoot = "Data/Original/Auto/", sites)
 

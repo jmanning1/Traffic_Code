@@ -4,17 +4,19 @@ library(RCurl)
 # Code Adapted from https://hydroecology.net/downloading-lots-of-files-with-r/
 
 # Empties Destination Folder
-unlink("D:/Documents/5872M-Dissertation/Data/Original/Auto/*.tcd")
+data_dir = "tcd-data"
+dir.create(data_dir)
 
-CO = c("10", "20", "30", "40", "50", "60", "70", "79")
+# CO = c("10", "20", "30", "40", "50", "60", "70", "79")
+CO = c("10")
 year = c("2015", "2016", "2017", "2018")
 month = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 month_2015 = c("Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 month_2018 = c("Jan", "Feb", "Mar", "Apr", "May", "Jun")
 
 # Secure Login
-un = readline("Type the username:")
-pw = readline("Type the password:")
+# un = readline("Type the username:")
+# pw = readline("Type the password:")
 
 for(a in seq(length(CO))){
   
@@ -28,10 +30,6 @@ for(a in seq(length(CO))){
     
     for(d in seq(length(month_current))){
       
-
-    
-
-
 # Set Co, Year and Month to Download
       baseurl = paste0("https://www.midas-data.org.uk/midasdata/Trafdata/Co", CO[a], "/", year[b], "/",month_current[d], "/")
       print(baseurl)
@@ -56,7 +54,7 @@ for(a in seq(length(CO))){
       # To Download ###########################################
       
       # Set Output Directory
-      mydir = "D:/Documents/5872M-Dissertation/Data/Original/Auto/"
+      mydir = "tcd-data/"
       
       # Generate Full Urls
       fileurls = paste0(baseurl, urls)
@@ -74,3 +72,13 @@ for(a in seq(length(CO))){
     }
   }
 }
+
+# unzip to tcd subfolder
+dir.create(file.path(data_dir, "tcd"))
+f_bz2 = list.files(path = data_dir, pattern = "*.bz2$", full.names = TRUE)
+f_tcd = gsub(pattern = ".bz2", replacement = "", x = f_bz2)
+for(i in 1:length(f_bz2)) {
+  R.utils::bunzip2(f_bz2[i], f_tcd[i])
+}
+dir.create("tcd")
+file.copy(f_tcd[2:length(f_tcd)], "tcd")
