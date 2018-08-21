@@ -26,7 +26,7 @@ osgb_sites = osgb_sites[stat19_buffer, ]
 
 a <- character(0)
 
-# Cycle through Accidents
+# Cycle through Collisions
 
 for(j in 1:nrow(stat19_buffer)){
   collision = stat19_buffer[j, ]

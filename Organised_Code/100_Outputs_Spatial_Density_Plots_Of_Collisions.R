@@ -60,3 +60,25 @@ image2D(z = AveDens, main="Fatal Collisions Within 2km of a Traffic Count Site")
 image2D(z = AveDens, main="Severe and Fatal Collisions Within 2km of a Traffic Count Site")
 image2D(z = AveDens, main="Collisions Farther than 2km from a Traffic Count Site")
 
+# Logistic Graph
+
+logisitic = function(x) 1/(1+exp(-x))
+X = seq(-20, 20, length.out = 100)
+Y = logisitic(X)
+plot(X, Y, xlab="Time", ylab="", xaxt='n', yaxt= 'n', cex.lab=2, cex.main=2, main = "Has a Collision Occurred?") + 
+  lines(X,Y) + 
+  axis(side = 2, at = c(0,1), labels = c("False", "True"), cex.axis=2)
+
+# Reason for Random Forests
+
+coll_sim = function(x) {0+1*(x > 0.10 & x < 0.20 | x > 0.65 & x < 0.95)}
+X = seq(0,1, length.out=100)
+graph = coll_sim(X)
+Y = as.numeric(runif(100)<graph)
+
+plot(X,-Y, xlab="Time", ylab="", xaxt='n', yaxt= 'n', cex.lab=2, cex.main=2, main = "Has a Collision Occurred Recently and Is Traffic Impacted?") + 
+  lines(X,-Y) + 
+  axis(side = 2, at = c(0,-1), labels = c("False", "True"), cex.axis=2)
+
+
+
