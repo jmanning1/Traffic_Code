@@ -25,7 +25,7 @@ nrow(all_sts)
 sts1 = tm_shape(uk, bbox = st_bbox(c(xmin = 150000, xmax = 650000, ymax = 600000, ymin = 0), crs = st_crs(27700))) +
   tm_polygons(alpha = 0.1) +
   tm_shape(all_sts) +
-  tm_dots() + 
+  tm_dots(col = "#9ECAE1") + 
   tm_layout(title = "Original MIDAS Webris Sites", main.title.size = 10)
 
 # Identify and Highlight Duplicates

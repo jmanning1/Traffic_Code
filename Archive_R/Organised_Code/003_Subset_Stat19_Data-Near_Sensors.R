@@ -35,7 +35,7 @@ osgb_sites = st_transform(ac_sites, crs = 27700)
 sts2 = tm_shape(uk, bbox = st_bbox(c(xmin = 150000, xmax = 650000, ymax = 600000, ymin = 0), crs = st_crs(27700))) +
   tm_polygons(alpha = 0.1) +
   tm_shape(osgb_sites) +
-  tm_dots() + 
+  tm_dots(col = "#4292C6") + 
   tm_layout(title = "Reduced MIDAS Webtris Sites", main.title.size = 10)
 
 grid.newpage()
