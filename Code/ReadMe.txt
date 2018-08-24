@@ -2,7 +2,7 @@ This document details what each code file does.
 The order that the code should be run in is identified by the number at the front of the file. 
 These files contain commented out sections of code used for visualisation, output extraction and other iterations. 
 Where data is input or output, locations and destinations need to be set. 
-Legacy Code and Investigations can be located in Archive_R Folder - This code may not work with current workflow.
+Legacy Code and Investigations can be located in Archive_R Folder.
 
 Order of Reproducible Code Workflow:
 
