@@ -2,12 +2,16 @@
 
 # Run 007_Formatting_Halogen_Data on 28/01/2016
 
+stat19_date = as.data.frame(readr::read_csv(file.path("D:/Documents/5872M-Dissertation/Data/Geometries/", "Stat19_2016_2km_Subset.csv")))
+
+colnames(stat19) = c("Accident_Index", "Location_Easting_OSGR", "Location_Northing_OSGR", "Police_Force", "Accident_Severity", "Number_of_Vehicles", "Number_of_Casualties", "Date", "Day_of_Week", "Time", "Local_Authority_(District)", "Local_Authority_(Highway)", "1st_Road_Class", "1st_Road_Number", "Road_Type", "Speed_limit", "Junction_Detail", "Junction_Control", "2nd_Road_Class", "2nd_Road_Number", "Pedestrian_Crossing-Human_Control", "Pedestrian_Crossing-Physical_Facilities", "Light_Conditions", "Weather_Conditions", "Road_Surface_Conditions", "Special_Conditions_at_Site", "Carriageway_Hazards", "Urban_or_Rural_Area", "Did_Police_Officer_Attend_Scene_of_Accident", "LSOA_of_Accident_Location", "X", "Y")
+
 # Libraries Used
 
 # library(ggplot2)
 # library(gridExtra)
 
-jan28 = as.data.frame(halo_spatial[date(halo_spatial$Datetime) == "2016-01-29",])
+jan28 = as.data.frame(halo_spatial[date(halo_spatial$Datetime) == "2016-01-28",])
 head(jan28)
 colnames(jan28) = c("Control Office","Geographic Address",
                    "Year","Month",
@@ -292,7 +296,8 @@ RTF4 = ggplot(data = TC1TR, aes(x = `Time GMT`)) +
   ylim(c(0, 100))
 
 
-grid.arrange(RSL1, RSL2, RSL3, RSL4,ROL1, ROL2, ROL3, ROL4, RHL1, RHL2, RHL3, RHL4, RTF1, RTF2, RTF3, RTF4, nrow = 4, ncol = 4, top = "M1/2516A 'Rubbernecking Effect' of Collision")
+grid.arrange(RSL1, RSL2, RSL3, RSL4,ROL1, ROL2, ROL3, ROL4, RHL1, RHL2, RHL3, RHL4, RTF1, RTF2, RTF3, RTF4,
+             nrow = 4, ncol = 4, top = "M1/2516A Opposite Carriageway of the Collision")
 
 
 # Average Speeds of Upstream Flow

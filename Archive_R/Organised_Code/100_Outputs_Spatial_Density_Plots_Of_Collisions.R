@@ -73,8 +73,7 @@ plot(X, Y, xlab="Time", ylab="", xaxt='n', yaxt= 'n', cex.lab=2, cex.main=2, mai
 
 coll_sim = function(x) {0+1*(x > 0.10 & x < 0.20 | x > 0.65 & x < 0.95)}
 X = seq(0,1, length.out=100)
-graph = coll_sim(X)
-Y = as.numeric(runif(100)<graph)
+Y = coll_sim(X)
 
 plot(X,-Y, xlab="Time", ylab="", xaxt='n', yaxt= 'n', cex.lab=2, cex.main=2, main = "Has a Collision Occurred Recently and Is Traffic Impacted?") + 
   lines(X,-Y) + 
